@@ -15,6 +15,8 @@ class _AddWishScreenPage extends State<AddWishPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
+  final TextEditingController _link2Controller = TextEditingController();
+  final TextEditingController _link3Controller = TextEditingController();
   final TextEditingController _imageUrlController = TextEditingController();
 
   @override
@@ -22,6 +24,8 @@ class _AddWishScreenPage extends State<AddWishPage> {
     _nameController.dispose();
     _priceController.dispose();
     _linkController.dispose();
+    _link2Controller.dispose();
+    _link3Controller.dispose();
     _imageUrlController.dispose();
     super.dispose();
   }
@@ -42,9 +46,35 @@ class _AddWishScreenPage extends State<AddWishPage> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Название подарка',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintText: 'Название',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -56,10 +86,36 @@ class _AddWishScreenPage extends State<AddWishPage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
-                decoration: const InputDecoration(
-                  labelText: 'Цена',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintText: 'Цена',
                   prefixText: '₽ ',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -74,43 +130,181 @@ class _AddWishScreenPage extends State<AddWishPage> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _linkController,
-                decoration: const InputDecoration(
-                  labelText: 'Ссылка на подарок',
-                  border: OutlineInputBorder(),
-                  hintText: 'https://example.com/gift',
-                ),
-                keyboardType: TextInputType.url,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, укажите ссылку';
-                  }
-                  if (!Uri.tryParse(value)!.hasAbsolutePath) {
-                    return 'Введите корректную ссылку';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
                 controller: _imageUrlController,
-                decoration: const InputDecoration(
-                  labelText: 'Ссылка на картинку',
-                  border: OutlineInputBorder(),
-                  hintText: 'https://example.com/image.jpg',
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintText: 'Ссылка на картинку',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
                 ),
                 keyboardType: TextInputType.url,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Пожалуйста, укажите ссылку на изображение';
                   }
-                  if (!Uri.tryParse(value)!.hasAbsolutePath) {
-                    return 'Введите корректную ссылку';
-                  }
+                  // if (!Uri.tryParse(value)!.hasAbsolutePath) {
+                  //   return 'Введите корректную ссылку';
+                  // }
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _linkController,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintText: 'Где можно купить(ссылка)',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                ),
+                keyboardType: TextInputType.url,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, укажите ссылку';
+                  }
+                  // if (!Uri.tryParse(value)!.hasAbsolutePath) {
+                  //   return 'Введите корректную ссылку';
+                  // }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _link2Controller,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintText: 'Где можно купить(ссылка)',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                ),
+                keyboardType: TextInputType.url,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, укажите ссылку';
+                  }
+                  // if (!Uri.tryParse(value)!.hasAbsolutePath) {
+                  //   return 'Введите корректную ссылку';
+                  // }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _link3Controller,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintText: 'Где можно купить(ссылка)',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+                  ),
+                ),
+                keyboardType: TextInputType.url,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, укажите ссылку';
+                  }
+                  // if (!Uri.tryParse(value)!.hasAbsolutePath) {
+                  //   return 'Введите корректную ссылку';
+                  // }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   WishEntity wishEntity = WishEntity(
@@ -118,8 +312,8 @@ class _AddWishScreenPage extends State<AddWishPage> {
                       roomId: roomId,
                       name: _nameController.text,
                       url: _linkController.text,
-                      url2: _linkController.text,
-                      url3: _linkController.text,
+                      url2: _link2Controller.text,
+                      url3: _link3Controller.text,
                       imageUrl: _imageUrlController.text,
                       price: double.parse(_priceController.text),
                       isFulfilled: false);

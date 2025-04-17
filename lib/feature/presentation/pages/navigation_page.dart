@@ -12,10 +12,11 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   // Список экранов для переключения (убрали AddRoomPage)
   final List<Widget> _screens = [
+    const HomePage(),
     const HomePage(),
     const FriendListPage(),
   ];
@@ -30,26 +31,30 @@ class _NavigationPageState extends State<NavigationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_selectedIndex],
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100.0),
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, '/home');
-        },
-        backgroundColor: const Color.fromRGBO(109, 87, 252, 1),
-        foregroundColor: Colors.white,
-        focusColor: Colors.white,
-        hoverColor: Colors.white,
-        tooltip: 'Increment',
-        child: const Icon(Icons.home),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(100.0),
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pushNamed(context, '/home');
+      //   },
+      //   backgroundColor: const Color.fromRGBO(109, 87, 252, 1),
+      //   foregroundColor: Colors.white,
+      //   focusColor: Colors.white,
+      //   hoverColor: Colors.white,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.home),
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
             label: 'События',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Главная',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

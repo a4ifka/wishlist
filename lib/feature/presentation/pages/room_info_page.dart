@@ -114,7 +114,8 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
                   ),
                 ),
                 onPressed: () {
-                  showAddWishBottomSheet(context, roomEntity.id);
+                  Navigator.pushNamed(context, '/add-wish',
+                      arguments: roomEntity.id);
                 },
                 child: const Text(
                   'Добавить',
