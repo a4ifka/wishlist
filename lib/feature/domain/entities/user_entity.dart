@@ -7,7 +7,7 @@ class UserEntity extends Equatable {
   final String uuid;
   final List<YourFriendEntity>? friends;
 
-  UserEntity({
+  const UserEntity({
     required this.id,
     required this.name,
     required this.uuid,

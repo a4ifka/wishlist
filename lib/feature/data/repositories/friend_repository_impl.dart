@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:wishlist/core/error/failure.dart';
 import 'package:wishlist/feature/data/datasource/friend_remote_data_source.dart';
 import 'package:wishlist/feature/domain/entities/friend_entity.dart';
+import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/domain/repositories/friend_repository.dart';
 
@@ -95,6 +96,18 @@ class FriendRepositoryImpl extends FriendRepository {
     try {
       final remoteFriends = await friendRemoteDataSource.loadFriends(userId);
       return Right(remoteFriends);
+    } on ServerFailure catch (error) {
+      return Left(ServerFailure(message: error.message));
+    } catch (error) {
+      return Left(ServerFailure(message: error.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<RoomEntity>>> getRoomsFriend(String uuid) async {
+    try {
+      final remoteRooms = await friendRemoteDataSource.getRoomsFriend(uuid);
+      return Right(remoteRooms);
     } on ServerFailure catch (error) {
       return Left(ServerFailure(message: error.message));
     } catch (error) {

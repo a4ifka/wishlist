@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wishlist/feature/domain/entities/friend_entity.dart';
-import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
 import 'package:wishlist/feature/presentation/widgets/request_list_item.dart';
@@ -51,7 +50,6 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                   if (groupValue == 0) {
                     List<FriendEntity> filteredList = state.requests
                         .where((friend) =>
-                            friend.receiverId != null &&
                             friend.receiverId == currentUserId &&
                             friend.status == 'pending')
                         .toList();

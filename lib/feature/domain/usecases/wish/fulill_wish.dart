@@ -17,7 +17,7 @@ class FulfillWish implements UseCase<void, WishparamsFulfill> {
 
 // ignore: must_be_immutable
 class WishparamsFulfill extends Equatable {
-  String wishId;
+  int wishId;
   String userId;
 
   WishparamsFulfill({required this.wishId, required this.userId});

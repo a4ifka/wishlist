@@ -52,7 +52,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 context.read<UserCubit>().addUser(userModel);
                 if (name.isNotEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Привет, $name!')),
+                    const SnackBar(content: Text('Успешно')),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

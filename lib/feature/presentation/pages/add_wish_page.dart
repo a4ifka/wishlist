@@ -4,7 +4,7 @@ import 'package:wishlist/feature/domain/entities/wish_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
 
 class AddWishPage extends StatefulWidget {
-  const AddWishPage({Key? key}) : super(key: key);
+  const AddWishPage({super.key});
 
   @override
   _AddWishScreenPage createState() => _AddWishScreenPage();
@@ -118,6 +118,8 @@ class _AddWishScreenPage extends State<AddWishPage> {
                       roomId: roomId,
                       name: _nameController.text,
                       url: _linkController.text,
+                      url2: _linkController.text,
+                      url3: _linkController.text,
                       imageUrl: _imageUrlController.text,
                       price: double.parse(_priceController.text),
                       isFulfilled: false);

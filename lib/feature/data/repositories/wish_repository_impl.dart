@@ -44,6 +44,8 @@ class WishRepositoryImpl implements WishRepository {
       roomId: wish.roomId,
       name: wish.name,
       url: wish.url,
+      url2: wish.url2,
+      url3: wish.url3,
       price: wish.price,
       imageUrl: wish.imageUrl,
       isFulfilled: wish.isFulfilled,
@@ -67,6 +69,8 @@ class WishRepositoryImpl implements WishRepository {
         roomId: wish.roomId,
         name: wish.name,
         url: wish.url,
+        url2: wish.url2,
+        url3: wish.url3,
         price: wish.price,
         imageUrl: wish.imageUrl,
         isFulfilled: wish.isFulfilled,
@@ -94,11 +98,34 @@ class WishRepositoryImpl implements WishRepository {
   }
 
   @override
-  Future<Either<Failure, void>> fulfillWish(
-      String wishId, String userId) async {
+  Future<Either<Failure, void>> fulfillWish(int wishId, String userId) async {
     try {
       await remoteDataSource.fulfillWish(wishId, userId);
       return const Right(null);
+    } on ServerFailure catch (error) {
+      return Left(ServerFailure(message: error.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> getCompleted() async {
+    try {
+      final remoteWish = await remoteDataSource.getCompleted();
+      return Right(remoteWish);
+    } on ServerFailure catch (error) {
+      return Left(ServerFailure(message: error.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> getMyBooking() async {
+    try {
+      final remoteWish = await remoteDataSource.getMyBooking();
+      return Right(remoteWish);
     } on ServerFailure catch (error) {
       return Left(ServerFailure(message: error.message));
     } catch (e) {

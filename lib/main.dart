@@ -10,7 +10,10 @@ import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
 import 'package:wishlist/feature/presentation/pages/add_room_page.dart';
 import 'package:wishlist/feature/presentation/pages/add_wish_page.dart';
 import 'package:wishlist/feature/presentation/pages/auth/create_user_page.dart';
+import 'package:wishlist/feature/presentation/pages/friend/book_wish_friend_page.dart';
+import 'package:wishlist/feature/presentation/pages/friend/friend_list_page.dart';
 import 'package:wishlist/feature/presentation/pages/friend/friend_request_page.dart';
+import 'package:wishlist/feature/presentation/pages/friend/friend_rooms_page.dart';
 import 'package:wishlist/feature/presentation/pages/friend/friend_search_page.dart';
 import 'package:wishlist/feature/presentation/pages/home_page.dart';
 import 'package:wishlist/feature/presentation/pages/navigation_page.dart';
@@ -75,7 +78,13 @@ class MainPage extends StatelessWidget {
           '/navigation': (context) => NavigationPage(),
           '/search-friend': (context) => FriendSearchPage(),
           '/request-friend': (context) => FriendRequestPage(),
+          '/list-friend': (context) => FriendListPage(),
+          '/rooms-friend': (context) => FriendRoomsPage(),
+          '/book-wishes': (context) => BookWishFriendPage(),
         },
+        theme: ThemeData(
+          fontFamily: 'Montserrat',
+        ),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,

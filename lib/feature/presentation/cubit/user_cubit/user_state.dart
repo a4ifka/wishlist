@@ -6,6 +6,8 @@ sealed class UserState extends Equatable {
 
   @override
   List<Object> get props => [];
+
+  get dynamicText => null;
 }
 
 class UserInitial extends UserState {}

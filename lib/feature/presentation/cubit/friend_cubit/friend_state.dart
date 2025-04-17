@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:wishlist/feature/domain/entities/friend_entity.dart';
+import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/domain/entities/user_entity.dart';
 
 abstract class FriendState extends Equatable {
@@ -13,6 +14,20 @@ class FriendStart extends FriendState {}
 
 // Состояния для поиска
 class FriendSearchLoading extends FriendState {}
+
+class FriendRoomsSuccess extends FriendState {
+  final List<RoomEntity> room;
+  FriendRoomsSuccess(this.room);
+  @override
+  List<Object?> get props => [room];
+}
+
+class FriendListSuccess extends FriendState {
+  final List<UserEntity> users;
+  FriendListSuccess(this.users);
+  @override
+  List<Object?> get props => [users];
+}
 
 class FriendSearchSuccess extends FriendState {
   final List<UserEntity> users;

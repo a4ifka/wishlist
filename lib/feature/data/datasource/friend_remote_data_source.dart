@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wishlist/feature/data/models/friend_model.dart';
+import 'package:wishlist/feature/data/models/room_model.dart';
 import 'package:wishlist/feature/data/models/user_model.dart';
 import 'package:wishlist/feature/domain/entities/user_entity.dart';
 
@@ -11,6 +12,7 @@ abstract class FriendRemoteDataSource {
   Future<List<UserModel>> getFriends(String userId);
   Future<void> removeFriend(String userId, String friendId);
   Future<List<UserModel>> loadFriends(String userId);
+  Future<List<RoomModel>> getRoomsFriend(String uuid);
 }
 
 class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
@@ -151,7 +153,6 @@ class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
       final updateResponse = await supabaseClient
           .from('users_info')
           .update({'friend': friendsList}).eq('uuid', userId);
-      ;
 
       if (updateResponse.error != null) {
         throw Exception(updateResponse.error!.message);
@@ -209,30 +210,24 @@ class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
 
   @override
   Future<List<UserModel>> loadFriends(String userId) async {
-    // Получаем данные пользователя с его списком друзей
     final response = await supabaseClient
         .from('users_info')
         .select('friend')
-        .eq('uuids', userId)
+        .eq('uuid', userId)
         .single();
 
-    // Извлекаем список друзей из JSON
     final friendsJson = response['friend'] as List<dynamic>? ?? [];
 
-    // Если нет друзей, возвращаем пустой список
     if (friendsJson.isEmpty) return [];
 
-    // Получаем UUID всех друзей
     final friendIds =
         friendsJson.map<String>((friend) => friend['uuid'] as String).toList();
 
-    // Получаем информацию о каждом друге
     final friendsInfoResponse = await supabaseClient
         .from('users_info')
-        .select('uuid, name')
+        .select()
         .inFilter('uuid', friendIds);
 
-    // Преобразуем в список UserInfo
     return (friendsInfoResponse as List)
         .map((e) => UserModel(
               uuid: e['uuid'],
@@ -240,5 +235,13 @@ class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
               id: e['id'],
             ))
         .toList();
+  }
+
+  @override
+  Future<List<RoomModel>> getRoomsFriend(String uuid) async {
+    final response =
+        await supabaseClient.from('rooms').select().eq('owner', uuid);
+
+    return response.map((room) => RoomModel.fromJson(room)).toList();
   }
 }

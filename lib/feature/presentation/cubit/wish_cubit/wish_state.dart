@@ -13,6 +13,8 @@ class WishLoading extends WishState {}
 
 class WishStart extends WishState {}
 
+class WishesSuccess extends WishState {}
+
 class WishesLoaded extends WishState {
   final List<WishEntity> wishes;
 
@@ -20,6 +22,24 @@ class WishesLoaded extends WishState {
 
   @override
   List<Object> get props => [wishes];
+}
+
+class WishesGetCountBooking extends WishState {
+  final int count;
+
+  const WishesGetCountBooking({required this.count});
+
+  @override
+  List<Object> get props => [count];
+}
+
+class WishesGetCountCompleted extends WishState {
+  final int count;
+
+  const WishesGetCountCompleted({required this.count});
+
+  @override
+  List<Object> get props => [count];
 }
 
 class WishLoaded extends WishState {

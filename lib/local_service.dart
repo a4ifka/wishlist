@@ -14,7 +14,9 @@ import 'package:wishlist/feature/domain/repositories/room_repository.dart';
 import 'package:wishlist/feature/domain/repositories/user_repository.dart';
 import 'package:wishlist/feature/domain/repositories/wish_repository.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friend_requests.dart';
+import 'package:wishlist/feature/domain/usecases/friend/get_friend_rooms.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friends.dart';
+import 'package:wishlist/feature/domain/usecases/friend/get_list_friends.dart';
 import 'package:wishlist/feature/domain/usecases/friend/respond_to_friend_request.dart';
 import 'package:wishlist/feature/domain/usecases/friend/seatch_users.dart';
 import 'package:wishlist/feature/domain/usecases/friend/send_friend_request.dart';
@@ -30,6 +32,8 @@ import 'package:wishlist/feature/domain/usecases/user/sign_up_user.dart';
 import 'package:wishlist/feature/domain/usecases/wish/create_wish.dart';
 import 'package:wishlist/feature/domain/usecases/wish/delete_wish.dart';
 import 'package:wishlist/feature/domain/usecases/wish/fulill_wish.dart';
+import 'package:wishlist/feature/domain/usecases/wish/get_completed.dart';
+import 'package:wishlist/feature/domain/usecases/wish/get_my_booking.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_wish_id.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_wish_room.dart';
 import 'package:wishlist/feature/domain/usecases/wish/update_wish.dart';
@@ -50,11 +54,14 @@ Future<void> init() async {
 
   // Cubit
   sl.registerFactory<FriendCubit>(() => FriendCubit(
-      getFriendRequests: sl(),
-      getFriends: sl(),
-      respondToFriendRequest: sl(),
-      seatchUsers: sl(),
-      sendFriendRequest: sl()));
+        getFriendRequests: sl(),
+        getFriends: sl(),
+        respondToFriendRequest: sl(),
+        seatchUsers: sl(),
+        sendFriendRequest: sl(),
+        getListFriends: sl(),
+        getFriendRooms: sl(),
+      ));
 
   sl.registerFactory<SignInUserCubit>(() => SignInUserCubit(signInUser: sl()));
   sl.registerFactory<SignUpUserCubit>(() => SignUpUserCubit(signUpUser: sl()));
@@ -74,7 +81,9 @@ Future<void> init() async {
       createWish: sl(),
       updateWish: sl(),
       deleteWish: sl(),
-      fulfillWish: sl()));
+      fulfillWish: sl(),
+      getMyBooking: sl(),
+      getCompleted: sl()));
   // usecases
   sl.registerLazySingleton<GetFriendRequests>(
       () => GetFriendRequests(repository: sl()));
@@ -84,6 +93,10 @@ Future<void> init() async {
   sl.registerLazySingleton<SeatchUsers>(() => SeatchUsers(repository: sl()));
   sl.registerLazySingleton<SendFriendRequest>(
       () => SendFriendRequest(repository: sl()));
+  sl.registerLazySingleton<GetListFriends>(
+      () => GetListFriends(repository: sl()));
+  sl.registerLazySingleton<GetFriendRooms>(
+      () => GetFriendRooms(repository: sl()));
 
   sl.registerLazySingleton<SignInUser>(() => SignInUser(userRepository: sl()));
   sl.registerLazySingleton<SignUpUser>(() => SignUpUser(userRepository: sl()));
@@ -101,6 +114,8 @@ Future<void> init() async {
   sl.registerLazySingleton<UpdateWish>(() => UpdateWish(repository: sl()));
   sl.registerLazySingleton<DeleteWish>(() => DeleteWish(repository: sl()));
   sl.registerLazySingleton<FulfillWish>(() => FulfillWish(repository: sl()));
+  sl.registerLazySingleton<GetCompleted>(() => GetCompleted(repository: sl()));
+  sl.registerLazySingleton<GetMyBooking>(() => GetMyBooking(repository: sl()));
 
   sl.registerLazySingleton<GetUserInfo>(() => GetUserInfo(repository: sl()));
   sl.registerLazySingleton<CreateUser>(() => CreateUser(repository: sl()));

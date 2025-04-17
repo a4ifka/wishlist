@@ -21,6 +21,12 @@ class FriendSearchPage extends StatelessWidget {
               Navigator.pushNamed(context, '/request-friend');
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, '/list-friend');
+            },
+          ),
         ],
       ),
       body: Column(

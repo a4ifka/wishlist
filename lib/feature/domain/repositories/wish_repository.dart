@@ -9,5 +9,7 @@ abstract class WishRepository {
       WishEntity wish);
   Future<Either<Failure, void>> updateWish(WishEntity wish);
   Future<Either<Failure, void>> deleteWish(String wishId);
-  Future<Either<Failure, void>> fulfillWish(String wishId, String userId);
+  Future<Either<Failure, void>> fulfillWish(int wishId, String userId);
+  Future<Either<Failure, int>> getMyBooking();
+  Future<Either<Failure, int>> getCompleted();
 }
