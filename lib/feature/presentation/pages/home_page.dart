@@ -344,7 +344,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                     itemCount: state.rooms.length,
                     itemBuilder: (context, index) {
-                      return RoomListItem(roomEntity: state.rooms[index]);
+                      return RoomListItem(
+                        roomEntity: state.rooms[index],
+                        lengths: index,
+                      );
                     },
                   ),
                 );

@@ -42,6 +42,15 @@ class WishesGetCountCompleted extends WishState {
   List<Object> get props => [count];
 }
 
+class WishGetLoaded extends WishState {
+  final WishEntity wish;
+
+  const WishGetLoaded({required this.wish});
+
+  @override
+  List<Object> get props => [wish];
+}
+
 class WishLoaded extends WishState {
   final List<Map<String, dynamic>> wish;
 

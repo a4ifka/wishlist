@@ -35,7 +35,9 @@ import 'package:wishlist/feature/domain/entities/room_entity.dart';
 
 class RoomListItem extends StatefulWidget {
   final RoomEntity roomEntity;
-  const RoomListItem({super.key, required this.roomEntity});
+  final int lengths;
+  const RoomListItem(
+      {super.key, required this.roomEntity, required this.lengths});
 
   @override
   State<RoomListItem> createState() => _RoomListItemState();
@@ -44,7 +46,7 @@ class RoomListItem extends StatefulWidget {
 class _RoomListItemState extends State<RoomListItem> {
   @override
   Widget build(BuildContext context) {
-    final Color bgColor = widget.roomEntity.id % 3 == 0
+    final Color bgColor = widget.lengths % 3 == 0
         ? const Color.fromRGBO(185, 162, 249, 0.8)
         : const Color.fromRGBO(255, 223, 135, 1);
     return GestureDetector(

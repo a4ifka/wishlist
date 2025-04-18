@@ -111,25 +111,30 @@ class _FriendListPageState extends State<FriendListPage> {
             ),
           ),
           const SizedBox(height: 50),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: const Row(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Мои друзья',
+                const Text('Мои друзья',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
                       height: 0,
                     )),
-                Text('Найти',
-                    style: TextStyle(
-                      color: Color.fromRGBO(109, 87, 252, 1),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      height: 0,
-                    )),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/search-friend');
+                  },
+                  child: const Text('Найти',
+                      style: TextStyle(
+                        color: Color.fromRGBO(109, 87, 252, 1),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 0,
+                      )),
+                ),
               ],
             ),
           ),

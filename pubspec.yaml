@@ -41,11 +41,13 @@ flutter:
 
   assets:
    - assets/person.png
+   - assets/personpup.png
    - assets/gift.png
    - assets/lock.png
    - assets/back.png
    - assets/avatar.png
    - assets/open.png
+   - assets/Green.png
 
 
   fonts:

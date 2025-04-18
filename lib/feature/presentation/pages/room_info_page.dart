@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
-import 'package:wishlist/feature/presentation/widgets/add_wish_bottom_sheet.dart';
+
 import 'package:wishlist/feature/presentation/widgets/wish_list_item.dart';
 
 class RoomInfoPage extends StatefulWidget {

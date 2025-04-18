@@ -61,14 +61,13 @@ class WishCubit extends Cubit<WishState> {
     ));
   }
 
-  // Future<void> loadWishById(WishparamsId params) async {
-  //   emit(WishLoading());
-  //   final result = await getWishById(params);
-  //   result.fold(
-  //     (failure) => emit(WishError(message: mapFailureFromMessage(failure))),
-  //     (wish) => emit(WishLoaded(wish: wish)),
-  //   );
-  // }
+  Future<void> loadWishById(WishparamsId params) async {
+    emit(WishStart());
+    final failureOrWish = await getWishById(params);
+    emit(failureOrWish.fold(
+        (failure) => WishError(message: mapFailureFromMessage(failure)),
+        (wish) => WishGetLoaded(wish: wish)));
+  }
 
   addWish(WishEntity wishEntity) async {
     emit(WishStart());
