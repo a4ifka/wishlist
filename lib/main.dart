@@ -29,9 +29,9 @@ import 'package:wishlist/local_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: 'https://uoapfkpzrypzyblpycvj.supabase.co',
+    url: 'URL',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvYXBma3B6cnlwenlibHB5Y3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3Mjg1OTYsImV4cCI6MjA1ODMwNDU5Nn0.GLhwNbzphz1gi5k29aSRwGRtj4Oenain4wQcideoBgk',
+        'API_KEY',
   );
   init();
   runApp(const MainPage());
