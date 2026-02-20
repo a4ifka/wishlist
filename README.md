@@ -123,11 +123,14 @@ flutter gen-l10n
 flutter run
 ```
 
-Добавь в `.env` или `lib/core/config.dart`:
+Добавь в `main.dart` или `lib/main.dart`:
 
 ```dart
-const supabaseUrl = 'your_supabase_url';
-const supabaseAnonKey = 'your_supabase_anon_key';
+  await Supabase.initialize(
+    url: 'URL',
+    anonKey:
+        'API_KEY',
+  );
 ```
 
 ---
