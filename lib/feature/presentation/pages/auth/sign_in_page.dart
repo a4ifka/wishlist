@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/feature/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/sign_in_cubit/sign_in_state.dart';
 
