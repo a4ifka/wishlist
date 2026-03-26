@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import 'package:wishlist/core/error/failure.dart';
 import 'package:wishlist/feature/data/datasource/wish_remote_data_source.dart';
@@ -126,6 +127,30 @@ class WishRepositoryImpl implements WishRepository {
     try {
       final remoteWish = await remoteDataSource.getMyBooking();
       return Right(remoteWish);
+    } on ServerFailure catch (error) {
+      return Left(ServerFailure(message: error.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> uploadWishImage(Uint8List bytes, String fileName) async {
+    try {
+      final url = await remoteDataSource.uploadWishImage(bytes, fileName);
+      return Right(url);
+    } on ServerFailure catch (error) {
+      return Left(ServerFailure(message: error.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> getMyWishesCount() async {
+    try {
+      final count = await remoteDataSource.getMyWishesCount();
+      return Right(count);
     } on ServerFailure catch (error) {
       return Left(ServerFailure(message: error.message));
     } catch (e) {

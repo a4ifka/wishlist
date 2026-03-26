@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wishlist/core/error/failure.dart';
@@ -7,6 +8,8 @@ import 'package:wishlist/feature/domain/usecases/wish/delete_wish.dart';
 import 'package:wishlist/feature/domain/usecases/wish/fulill_wish.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_completed.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_my_booking.dart';
+import 'package:wishlist/feature/domain/usecases/wish/get_my_wishes_count.dart';
+import 'package:wishlist/feature/domain/usecases/wish/upload_wish_image.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_wish_id.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_wish_room.dart';
 import 'package:wishlist/feature/domain/usecases/wish/update_wish.dart';
@@ -22,6 +25,8 @@ class WishCubit extends Cubit<WishState> {
   final FulfillWish fulfillWish;
   final GetMyBooking getMyBooking;
   final GetCompleted getCompleted;
+  final GetMyWishesCount getMyWishesCount;
+  final UploadWishImage uploadWishImage;
 
   WishCubit({
     required this.getWishesByRoom,
@@ -32,6 +37,8 @@ class WishCubit extends Cubit<WishState> {
     required this.fulfillWish,
     required this.getMyBooking,
     required this.getCompleted,
+    required this.getMyWishesCount,
+    required this.uploadWishImage,
   }) : super(WishInitial());
 
   fetchWishesByRoom(int roomId) async {
@@ -40,6 +47,23 @@ class WishCubit extends Cubit<WishState> {
     emit(failureOrUser.fold(
       (failure) => WishError(message: mapFailureFromMessage(failure)),
       (wishes) => WishesLoaded(wishes: wishes),
+    ));
+  }
+
+  fetchCounts() async {
+    emit(WishStart());
+    final results = await Future.wait([
+      getMyWishesCount(const NoWishParams()),
+      getCompleted(WishParamsGetCompleted(i: 0)),
+      getMyBooking(WishParamsGetMyBooking(i: 0)),
+    ]);
+    final myWishes = results[0].getOrElse(() => 0);
+    final completed = results[1].getOrElse(() => 0);
+    final myBooking = results[2].getOrElse(() => 0);
+    emit(WishCountsLoaded(
+      myWishes: myWishes,
+      completed: completed,
+      myBooking: myBooking,
     ));
   }
 
@@ -67,6 +91,35 @@ class WishCubit extends Cubit<WishState> {
     emit(failureOrWish.fold(
         (failure) => WishError(message: mapFailureFromMessage(failure)),
         (wish) => WishGetLoaded(wish: wish)));
+  }
+
+  addWishWithImage(WishEntity wish, Uint8List imageBytes, String fileName) async {
+    emit(WishStart());
+    final uploadResult = await uploadWishImage(
+      UploadWishImageParams(bytes: imageBytes, fileName: fileName),
+    );
+    await uploadResult.fold(
+      (failure) async => emit(WishError(message: mapFailureFromMessage(failure))),
+      (url) async {
+        final wishWithImage = WishEntity(
+          id: wish.id,
+          roomId: wish.roomId,
+          name: wish.name,
+          url: wish.url,
+          url2: wish.url2,
+          url3: wish.url3,
+          price: wish.price,
+          imageUrl: url,
+          isFulfilled: wish.isFulfilled,
+          fulfilledBy: wish.fulfilledBy,
+        );
+        final createResult = await createWish(WishparamsCreate(wish: wishWithImage));
+        emit(createResult.fold(
+          (failure) => WishError(message: mapFailureFromMessage(failure)),
+          (wish) => WishLoaded(wish: wish),
+        ));
+      },
+    );
   }
 
   addWish(WishEntity wishEntity) async {
@@ -127,11 +180,7 @@ class WishCubit extends Cubit<WishState> {
   // }
 
   String mapFailureFromMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ServerFailure _:
-        return "ServerFailure";
-      default:
-        return "Unexpected error";
-    }
+    if (failure is ServerFailure) return failure.message;
+    return "Unexpected error";
   }
 }

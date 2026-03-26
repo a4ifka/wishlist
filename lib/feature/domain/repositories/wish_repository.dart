@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import '../entities/wish_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:wishlist/core/error/failure.dart';
@@ -12,4 +13,6 @@ abstract class WishRepository {
   Future<Either<Failure, void>> fulfillWish(int wishId, String userId);
   Future<Either<Failure, int>> getMyBooking();
   Future<Either<Failure, int>> getCompleted();
+  Future<Either<Failure, int>> getMyWishesCount();
+  Future<Either<Failure, String>> uploadWishImage(Uint8List bytes, String fileName);
 }

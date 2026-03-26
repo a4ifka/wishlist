@@ -34,6 +34,8 @@ import 'package:wishlist/feature/domain/usecases/wish/delete_wish.dart';
 import 'package:wishlist/feature/domain/usecases/wish/fulill_wish.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_completed.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_my_booking.dart';
+import 'package:wishlist/feature/domain/usecases/wish/get_my_wishes_count.dart';
+import 'package:wishlist/feature/domain/usecases/wish/upload_wish_image.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_wish_id.dart';
 import 'package:wishlist/feature/domain/usecases/wish/get_wish_room.dart';
 import 'package:wishlist/feature/domain/usecases/wish/update_wish.dart';
@@ -83,7 +85,9 @@ Future<void> init() async {
       deleteWish: sl(),
       fulfillWish: sl(),
       getMyBooking: sl(),
-      getCompleted: sl()));
+      getCompleted: sl(),
+      getMyWishesCount: sl(),
+      uploadWishImage: sl()));
   // usecases
   sl.registerLazySingleton<GetFriendRequests>(
       () => GetFriendRequests(repository: sl()));
@@ -116,6 +120,8 @@ Future<void> init() async {
   sl.registerLazySingleton<FulfillWish>(() => FulfillWish(repository: sl()));
   sl.registerLazySingleton<GetCompleted>(() => GetCompleted(repository: sl()));
   sl.registerLazySingleton<GetMyBooking>(() => GetMyBooking(repository: sl()));
+  sl.registerLazySingleton<GetMyWishesCount>(() => GetMyWishesCount(repository: sl()));
+  sl.registerLazySingleton<UploadWishImage>(() => UploadWishImage(repository: sl()));
 
   sl.registerLazySingleton<GetUserInfo>(() => GetUserInfo(repository: sl()));
   sl.registerLazySingleton<CreateUser>(() => CreateUser(repository: sl()));

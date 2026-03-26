@@ -64,6 +64,21 @@ class WishOperationInProgress extends WishState {}
 
 class WishOperationSuccess extends WishState {}
 
+class WishCountsLoaded extends WishState {
+  final int myWishes;
+  final int completed;
+  final int myBooking;
+
+  const WishCountsLoaded({
+    required this.myWishes,
+    required this.completed,
+    required this.myBooking,
+  });
+
+  @override
+  List<Object> get props => [myWishes, completed, myBooking];
+}
+
 class WishError extends WishState {
   final String message;
 

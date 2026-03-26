@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wishlist/feature/data/models/wish_model.dart';
 import 'package:wishlist/main.dart';
@@ -11,6 +12,8 @@ abstract class WishRemoteDataSource {
   Future<void> fulfillWish(int wishId, String userId);
   Future<int> getMyBooking();
   Future<int> getCompleted();
+  Future<int> getMyWishesCount();
+  Future<String> uploadWishImage(Uint8List bytes, String fileName);
   RealtimeChannel listenToUserOrdersChanges(
       String channel, void Function() callback);
 }
@@ -109,6 +112,32 @@ class WishRemoteDataSourceImpl implements WishRemoteDataSource {
         .select()
         .eq('fulfilled_by', supabase.auth.currentUser!.id);
 
+    return response.length;
+  }
+
+  @override
+  Future<String> uploadWishImage(Uint8List bytes, String fileName) async {
+    final path = '${supabase.auth.currentUser!.id}/$fileName';
+    await supabaseClient.storage.from('wishes').uploadBinary(
+      path,
+      bytes,
+      fileOptions: const FileOptions(contentType: 'image/jpeg', upsert: true),
+    );
+    return supabaseClient.storage.from('wishes').getPublicUrl(path);
+  }
+
+  @override
+  Future<int> getMyWishesCount() async {
+    final myRooms = await supabaseClient
+        .from('rooms')
+        .select('id')
+        .eq('owner', supabase.auth.currentUser!.id);
+    final roomIds = myRooms.map((room) => room['id'] as int).toList();
+    if (roomIds.isEmpty) return 0;
+    final response = await supabaseClient
+        .from('wishes')
+        .select()
+        .inFilter('room_id', roomIds);
     return response.length;
   }
 }

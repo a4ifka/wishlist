@@ -28,6 +28,8 @@ dependencies:
   webview_flutter: ^4.10.0
   flutter_inappwebview: ^6.1.5
   email_validator: ^3.0.0
+  flutter_svg: ^2.2.4
+  image_picker: 1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +50,8 @@ flutter:
    - assets/avatar.png
    - assets/open.png
    - assets/Green.png
+   - assets/login_pic.png
+   - assets/splash.svg
 
 
   fonts:
