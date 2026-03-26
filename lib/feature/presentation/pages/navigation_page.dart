@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wishlist/feature/presentation/pages/friend/friend_list_page.dart';
-
 import 'package:wishlist/feature/presentation/pages/home_page.dart';
 
 class NavigationPage extends StatefulWidget {
