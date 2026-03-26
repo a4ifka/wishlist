@@ -20,7 +20,7 @@ import 'package:wishlist/feature/presentation/pages/navigation_page.dart';
 import 'package:wishlist/feature/presentation/pages/room_info_page.dart';
 import 'package:wishlist/feature/presentation/pages/auth/sign_in_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/feature/presentation/pages/auth/sign_up_page.dart';
 import 'package:wishlist/feature/presentation/pages/splash_page.dart';
 import 'package:wishlist/feature/presentation/pages/wish_info_page.dart';

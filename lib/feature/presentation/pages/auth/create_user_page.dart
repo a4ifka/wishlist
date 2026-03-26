@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_state.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/main.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 class CreateUserPage extends StatefulWidget {
   const CreateUserPage({super.key});
 
