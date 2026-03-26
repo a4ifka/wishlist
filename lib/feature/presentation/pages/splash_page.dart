@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_state.dart';
 
@@ -36,10 +37,14 @@ class SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child: Column(
+      body: Stack(
         children: [
-          const Text('WishList'),
+          SvgPicture.asset(
+            'assets/splash.svg',
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
           BlocListener<UserCubit, UserState>(
             listener: (context, state) {
               if (state is UserLoaded) {
@@ -54,7 +59,7 @@ class SplashPageState extends State<SplashPage> {
             child: const SizedBox(),
           ),
         ],
-      )),
+      ),
     );
   }
 }

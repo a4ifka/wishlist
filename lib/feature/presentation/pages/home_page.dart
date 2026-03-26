@@ -30,8 +30,7 @@ class _HomePageState extends State<HomePage> {
     context.read<RoomCubit>().fetchRoomsByUser();
 
     context.read<UserCubit>().fetchUserInfo(supabase.auth.currentUser!.id);
-    context.read<WishCubit>().fetchCompleted(0);
-    context.read<WishCubit>().fetchMyBooking(0);
+    context.read<WishCubit>().fetchCounts();
     var listen = Supabase.instance.client
         .channel('public:rooms')
         .onPostgresChanges(
@@ -121,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                     child: Stack(
                       children: [
                         // Текст в верхнем левом углу
-                        const Padding(
+                        Padding(
                           padding: const EdgeInsets.only(top: 20, left: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,12 +134,17 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              const Text(
-                                '10',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              BlocBuilder<WishCubit, WishState>(
+                                builder: (context, state) {
+                                  final count = state is WishCountsLoaded ? state.myWishes : 0;
+                                  return Text(
+                                    count.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -190,26 +194,14 @@ class _HomePageState extends State<HomePage> {
                                     const SizedBox(height: 10),
                                     BlocBuilder<WishCubit, WishState>(
                                       builder: (context, state) {
-                                        if (state is WishesGetCountCompleted) {
-                                          return Text(
-                                            state.count.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          );
-                                        } else if (state is WishError) {
-                                          return Center(
-                                              child: Text(state.message));
-                                        } else {
-                                          return const Text(
-                                            '0',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          );
-                                        }
+                                        final count = state is WishCountsLoaded ? state.completed : 0;
+                                        return Text(
+                                          count.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        );
                                       },
                                     ),
                                   ],
@@ -257,26 +249,14 @@ class _HomePageState extends State<HomePage> {
                                     const SizedBox(height: 10),
                                     BlocBuilder<WishCubit, WishState>(
                                       builder: (context, state) {
-                                        if (state is WishesGetCountBooking) {
-                                          return Text(
-                                            state.count.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          );
-                                        } else if (state is WishError) {
-                                          return Center(
-                                              child: Text(state.message));
-                                        } else {
-                                          return const Text(
-                                            '0',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          );
-                                        }
+                                        final count = state is WishCountsLoaded ? state.myBooking : 0;
+                                        return Text(
+                                          count.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        );
                                       },
                                     ),
                                   ],
@@ -332,7 +312,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context, state) {
               if (state is RoomsLoaded) {
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate:

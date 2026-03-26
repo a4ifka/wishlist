@@ -29,9 +29,9 @@ import 'package:wishlist/local_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: 'URL',
+    url: 'https://jmbjjfpeotrikittygdt.supabase.co',
     anonKey:
-        'API_KEY',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptYmpqZnBlb3RyaWtpdHR5Z2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NTUzMDcsImV4cCI6MjA5MDAzMTMwN30.pJCKLgD6CzYUwuCd53vTbDwtH23FbP4vt4svFwnXGpY',
   );
   init();
   runApp(const MainPage());
@@ -67,6 +67,10 @@ class MainPage extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        builder: (context, child) => GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: child,
+        ),
         home: const SplashPage(),
         routes: {
           '/signIn': (context) => SignInPage(),

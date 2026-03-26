@@ -51,8 +51,23 @@ class _WishInfoPageState extends State<WishInfoPage> {
                         color: Colors.amber,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child:
-                          Expanded(child: Image.network(wishEntity.imageUrl)),
+                      child: wishEntity.imageUrl.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                wishEntity.imageUrl,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (_, __, ___) => const Center(
+                                  child: Icon(Icons.broken_image_outlined,
+                                      size: 48, color: Colors.grey),
+                                ),
+                              ),
+                            )
+                          : const Center(
+                              child: Icon(Icons.image_outlined,
+                                  size: 48, color: Colors.grey),
+                            ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
