@@ -24,6 +24,7 @@ import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/feature/presentation/pages/auth/sign_up_page.dart';
 import 'package:wishlist/feature/presentation/pages/splash_page.dart';
 import 'package:wishlist/feature/presentation/pages/wish_info_page.dart';
+import 'package:wishlist/feature/presentation/cubit/locale_cubit/locale_cubit.dart';
 import 'package:wishlist/local_service.dart';
 
 Future<void> main() async {
@@ -46,6 +47,9 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<LocaleCubit>(
+          create: (context) => LocaleCubit(),
+        ),
         BlocProvider<SignInUserCubit>(
           create: (context) => sl<SignInUserCubit>(),
         ),
@@ -65,8 +69,10 @@ class MainPage extends StatelessWidget {
           create: (context) => sl<FriendCubit>(),
         ),
       ],
-      child: MaterialApp(
+      child: BlocBuilder<LocaleCubit, Locale>(
+        builder: (context, locale) => MaterialApp(
         debugShowCheckedModeBanner: false,
+        locale: locale,
         builder: (context, child) => GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: child,
@@ -99,7 +105,9 @@ class MainPage extends StatelessWidget {
         ],
         supportedLocales: const [
           Locale('ru'),
+          Locale('en'),
         ],
+      ),
       ),
     );
   }
