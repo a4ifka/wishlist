@@ -25,6 +25,7 @@ import 'package:wishlist/feature/presentation/pages/auth/sign_up_page.dart';
 import 'package:wishlist/feature/presentation/pages/splash_page.dart';
 import 'package:wishlist/feature/presentation/pages/wish_info_page.dart';
 import 'package:wishlist/feature/presentation/cubit/locale_cubit/locale_cubit.dart';
+import 'package:wishlist/feature/presentation/cubit/product_cubit/product_cubit.dart';
 import 'package:wishlist/local_service.dart';
 
 Future<void> main() async {
@@ -86,7 +87,10 @@ class MainPage extends StatelessWidget {
           '/home/info': (context) => RoomInfoPage(),
           '/home/wish': (context) => WishInfoPage(),
           '/add-room': (context) => const AddRoomPage(),
-          '/add-wish': (context) => AddWishPage(),
+          '/add-wish': (context) => BlocProvider<ProductCubit>(
+                create: (_) => sl<ProductCubit>(),
+                child: const AddWishPage(),
+              ),
           '/navigation': (context) => NavigationPage(),
           '/search-friend': (context) => FriendSearchPage(),
           '/request-friend': (context) => FriendRequestPage(),

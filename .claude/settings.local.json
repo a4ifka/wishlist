@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&nm=698851587\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13; Pixel 7\\) AppleWebKit/537.36\")",
+      "Bash(curl -s -o wb_response.json -w \"%{http_code}\" \"https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&nm=698851587\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13; Pixel 7\\) AppleWebKit/537.36\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://card.wb.ru/cards/v1/detail?appType=1&curr=rub&dest=-1257786&spp=30&nm=698851587\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13; Pixel 7\\) AppleWebKit/537.36\")",
+      "Bash(curl -v \"https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&nm=698851587\" -H \"User-Agent: Mozilla/5.0\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://search.wb.ru/exactmatch/ru/common/v4/search?appType=1&curr=rub&dest=-1257786&query=698851587&resultset=catalog&sort=popular&suppressSpellCheck=false\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13; Pixel 7\\) AppleWebKit/537.36\")",
+      "Bash(curl -s -o search_resp.txt -w \"%{http_code}\" \"https://search.wb.ru/exactmatch/ru/common/v4/search?appType=1&curr=rub&dest=-1257786&query=698851587&resultset=catalog&sort=popular\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13; Pixel 7\\) AppleWebKit/537.36\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://basket-19.wbbasket.ru/vol6988/part698851/698851587/info/ru/card.json\")",
+      "Bash(python -c \":*)",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://wbninja.ru/parser/?s=698851587\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13\\) AppleWebKit/537.36\")",
+      "Bash(curl -s \"https://wbninja.ru/parser/?s=698851587\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13\\) AppleWebKit/537.36\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://basket-33.wbbasket.ru/vol6988/part698851/698851587/info/ru/card.json\")",
+      "Bash(curl -s \"https://basket-33.wbbasket.ru/vol6988/part698851/698851587/info/ru/card.json\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://catalog.wb.ru/sellers/catalog?appType=1&curr=rub&dest=-1257786&nm=698851587&supplier=10743\" -H \"User-Agent: Mozilla/5.0 \\(Linux; Android 13\\) AppleWebKit/537.36\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://basket-33.wbbasket.ru/vol6988/part698851/698851587/info/ru/price.json\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://wbxcatalog-ru.wildberries.ru/nm-2-card/catalog?nm=698851587&locale=ru&lang=ru&curr=rub&dest=-1257786\" -H \"User-Agent: Mozilla/5.0\")",
+      "Bash(curl -s \"https://basket-20.wbbasket.ru/vol3431/part343109/343109088/info/ru/card.json\")",
+      "Bash(curl -s \"https://wbninja.ru/parser/?s=343109088\" -H \"User-Agent: Mozilla/5.0\")"
+    ]
+  }
+}

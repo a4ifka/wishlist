@@ -1,17 +1,17 @@
-// ignore: depend_on_referenced_packages
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wishlist/core/error/failure.dart';
+import 'package:wishlist/core/marketplace_type.dart';
 import 'package:wishlist/feature/domain/entities/product_entity.dart';
-import 'package:wishlist/feature/domain/usecases/get_product_image.dart';
+import 'package:wishlist/feature/domain/usecases/product/get_product.dart';
 
 part 'product_parser_event.dart';
 part 'product_parser_state.dart';
 
 class ProductParserBloc extends Bloc<ProductParserEvent, ProductParserState> {
-  final GetProductImage getProductImage;
+  final GetProduct getProduct;
 
-  ProductParserBloc({required this.getProductImage})
+  ProductParserBloc({required this.getProduct})
       : super(ProductParserInitial()) {
     on<FetchProductImageEvent>(_onFetchProductImage);
   }
@@ -22,7 +22,11 @@ class ProductParserBloc extends Bloc<ProductParserEvent, ProductParserState> {
   ) async {
     emit(ProductParserLoading());
 
-    final result = await getProductImage(event.article);
+    final isUrl = event.article.contains('://');
+    final result = await getProduct(GetProductParams(
+      input: event.article,
+      marketplace: isUrl ? null : MarketplaceType.wildberries,
+    ));
 
     result.fold(
       (failure) => emit(ProductParserError(_mapFailureToMessage(failure))),
@@ -31,11 +35,7 @@ class ProductParserBloc extends Bloc<ProductParserEvent, ProductParserState> {
   }
 
   String _mapFailureToMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ServerFailure _:
-        return 'Server error';
-      default:
-        return 'Unexpected error';
-    }
+    if (failure is ServerFailure) return failure.message;
+    return 'Unexpected error';
   }
 }

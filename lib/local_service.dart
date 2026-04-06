@@ -2,17 +2,24 @@ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wishlist/feature/data/datasource/friend_remote_data_source.dart';
+import 'package:wishlist/feature/data/datasource/market_parsing/ozon_data_source.dart';
+import 'package:wishlist/feature/data/datasource/market_parsing/wildberries_data_source.dart';
+import 'package:wishlist/feature/data/datasource/market_parsing/yandex_market_data_source.dart';
 import 'package:wishlist/feature/data/datasource/room_remote_data_source.dart';
 import 'package:wishlist/feature/data/datasource/user_remote_data_source.dart';
 import 'package:wishlist/feature/data/datasource/wish_remote_data_source.dart';
 import 'package:wishlist/feature/data/repositories/friend_repository_impl.dart';
+import 'package:wishlist/feature/data/repositories/product_remote_impl.dart';
 import 'package:wishlist/feature/data/repositories/room_repository_impl.dart';
 import 'package:wishlist/feature/data/repositories/user_repository_impl.dart';
 import 'package:wishlist/feature/data/repositories/wish_repository_impl.dart';
 import 'package:wishlist/feature/domain/repositories/friend_repository.dart';
+import 'package:wishlist/feature/domain/repositories/product_repository.dart';
 import 'package:wishlist/feature/domain/repositories/room_repository.dart';
 import 'package:wishlist/feature/domain/repositories/user_repository.dart';
 import 'package:wishlist/feature/domain/repositories/wish_repository.dart';
+import 'package:wishlist/feature/domain/usecases/product/get_product.dart';
+import 'package:wishlist/feature/presentation/cubit/product_cubit/product_cubit.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friend_requests.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friend_rooms.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friends.dart';
@@ -146,4 +153,16 @@ Future<void> init() async {
       () => FriendRepositoryImpl(friendRemoteDataSource: sl()));
   sl.registerLazySingleton<FriendRemoteDataSource>(() =>
       FriendRemoteDataSourceImpl(supabaseClient: Supabase.instance.client));
+
+  // Product / Marketplace parsing
+  sl.registerFactory<ProductCubit>(() => ProductCubit(getProduct: sl()));
+  sl.registerLazySingleton<GetProduct>(() => GetProduct(repository: sl()));
+  sl.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(
+        wildberries: sl(),
+        ozon: sl(),
+        yandexMarket: sl(),
+      ));
+  sl.registerLazySingleton<WildberriesDataSource>(() => WildberriesDataSource());
+  sl.registerLazySingleton<OzonDataSource>(() => OzonDataSource());
+  sl.registerLazySingleton<YandexMarketDataSource>(() => YandexMarketDataSource());
 }
