@@ -77,6 +77,7 @@ Future<void> init() async {
   sl.registerFactory<UserCubit>(() => UserCubit(
         getUserInfo: sl(),
         createUser: sl(),
+        userRepository: sl(),
       ));
   sl.registerFactory<RoomCubit>(() => RoomCubit(
       getRoomsByUser: sl(),

@@ -10,4 +10,5 @@ abstract class UserRepository {
   Future<Either<Failure, void>> signOut();
   Future<Either<Failure, UserEntity>> getUserInfo(String uuid);
   Future<Either<Failure, void>> createUser(UserEntity userModel);
+  Future<Either<Failure, void>> updateBirthDate(DateTime birthDate);
 }

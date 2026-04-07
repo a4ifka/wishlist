@@ -64,6 +64,18 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
+  Future<Either<Failure, void>> updateBirthDate(DateTime birthDate) async {
+    try {
+      await userRemoteDataSources.updateBirthDate(birthDate);
+      return const Right(null);
+    } on ServerFailure catch (error) {
+      return Left(ServerFailure(message: error.message));
+    } catch (error) {
+      return Left(ServerFailure(message: error.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> createUser(UserEntity userEntity) async {
     final userModel = UserModel(
       id: 0,
