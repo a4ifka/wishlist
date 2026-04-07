@@ -102,3 +102,11 @@ class FriendError extends FriendState {
   @override
   List<Object> get props => [message];
 }
+
+class AllFriendsRoomsLoaded extends FriendState {
+  final Map<UserEntity, List<RoomEntity>> roomsByFriend;
+  AllFriendsRoomsLoaded(this.roomsByFriend);
+
+  @override
+  List<Object?> get props => [roomsByFriend];
+}

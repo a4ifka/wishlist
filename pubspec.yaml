@@ -31,6 +31,7 @@ dependencies:
   flutter_svg: ^2.2.4
   image_picker: 1.0.7
   http: ^1.2.2
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -47,7 +48,7 @@ flutter:
    - assets/personpup.png
    - assets/gift.png
    - assets/lock.png
-   - assets/back.png
+   - assets/back.svg
    - assets/avatar.png
    - assets/open.png
    - assets/Green.png

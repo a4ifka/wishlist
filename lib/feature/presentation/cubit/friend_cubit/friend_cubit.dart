@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wishlist/core/error/failure.dart';
+import 'package:wishlist/feature/domain/entities/room_entity.dart';
+import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friend_requests.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friend_rooms.dart';
 import 'package:wishlist/feature/domain/usecases/friend/get_friends.dart';
@@ -88,6 +90,20 @@ class FriendCubit extends Cubit<FriendState> {
     emit(failureOrRooms.fold(
         (failure) => FriendError(message: mapFailureFromMessage(failure)),
         (room) => FriendRoomsSuccess(room)));
+  }
+
+  fetchAllFriendsRooms(List<UserEntity> friends) async {
+    emit(FriendStart());
+    final Map<UserEntity, List<RoomEntity>> result = {};
+    for (final friend in friends) {
+      final either =
+          await getFriendRooms(GetFriendRoomsParams(uuid: friend.uuid));
+      either.fold(
+        (_) => null,
+        (rooms) => result[friend] = rooms,
+      );
+    }
+    emit(AllFriendsRoomsLoaded(result));
   }
 
   String mapFailureFromMessage(Failure failure) {
