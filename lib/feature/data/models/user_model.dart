@@ -7,13 +7,17 @@ class UserModel extends UserEntity with EquatableMixin {
       {required super.id,
       required super.name,
       required super.uuid,
-      super.friends});
+      super.friends,
+      super.birthDate});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
         id: json['id'] as int,
         name: json['name'] as String,
         uuid: json['uuid'] as String,
-        friends: json['frineds'] as List<YourFriendModel>?);
+        friends: json['frineds'] as List<YourFriendModel>?,
+        birthDate: json['birth_date'] != null
+            ? DateTime.tryParse(json['birth_date'] as String)
+            : null);
   }
 }

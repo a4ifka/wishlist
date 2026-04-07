@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:wishlist/feature/presentation/cubit/locale_cubit/locale_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_state.dart';
@@ -7,6 +8,29 @@ import 'package:wishlist/main.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  Future<void> _pickBirthDate(
+      BuildContext context, DateTime? current) async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: current ?? DateTime(now.year - 20),
+      firstDate: DateTime(now.year - 100),
+      lastDate: now,
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF6D57FC),
+            onSurface: Colors.black,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null && context.mounted) {
+      context.read<UserCubit>().updateBirthDate(picked);
+    }
+  }
 
   void _showSettings(BuildContext context) {
     showModalBottomSheet(
@@ -170,9 +194,16 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<UserCubit, UserState>(
+      body: BlocConsumer<UserCubit, UserState>(
+        listener: (context, state) {
+          if (state is UserOperationSuccess) {
+            context.read<UserCubit>().fetchUserInfo(
+                supabase.auth.currentUser!.id);
+          }
+        },
         builder: (context, state) {
           final name = state is UserLoaded ? state.users.name : '...';
+          final birthDate = state is UserLoaded ? state.users.birthDate : null;
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -201,6 +232,49 @@ class ProfilePage extends StatelessWidget {
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF120E00),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                const Text(
+                  'Дата рождения',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => _pickBirthDate(context, birthDate),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F7F9),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            birthDate != null
+                                ? DateFormat('d MMMM yyyy', 'ru')
+                                    .format(birthDate)
+                                : 'Не указана',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: birthDate != null
+                                  ? Colors.black
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        const Icon(Icons.edit_outlined,
+                            color: Colors.grey, size: 18),
+                      ],
                     ),
                   ),
                 ),

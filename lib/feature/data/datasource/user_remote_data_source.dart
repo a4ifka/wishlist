@@ -7,6 +7,7 @@ abstract class UserRemoteDataSources {
   Future<AuthResponse> signUpUser(String email, String password);
   Future<UserModel> getUserInfo(String uuid);
   Future<void> updateUserInfo(String name);
+  Future<void> updateBirthDate(DateTime birthDate);
   Future<void> createUser(UserModel userModel);
   Future<void> signOutUser();
 }
@@ -57,14 +58,19 @@ class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
 
   @override
   Future<void> updateUserInfo(String name) async {
-    final List<Map<String, dynamic>> data = await supabaseClient
+    await supabaseClient
+        .from("users_info")
+        .update({'name': name})
+        .eq('uuid', supabase.auth.currentUser!.id);
+  }
+
+  @override
+  Future<void> updateBirthDate(DateTime birthDate) async {
+    await supabaseClient
         .from("users_info")
         .update({
-          'name': name,
+          'birth_date': birthDate.toIso8601String().substring(0, 10),
         })
-        .eq('uuid', supabase.auth.currentUser!.id)
-        .select();
-    print('data --> $data');
-    return;
+        .eq('uuid', supabase.auth.currentUser!.id);
   }
 }
