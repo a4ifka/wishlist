@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:wishlist/feature/presentation/pages/friend/friend_list_page.dart';
+import 'package:wishlist/feature/presentation/pages/friend/friends_feed_page.dart';
 import 'package:wishlist/feature/presentation/pages/home_page.dart';
+import 'package:wishlist/feature/presentation/pages/profile_page.dart';
+import 'package:wishlist/feature/presentation/widgets/add_room_bottom_sheet.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
@@ -11,117 +12,70 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
-  // Список экранов для переключения (убрали AddRoomPage)
   final List<Widget> _screens = [
     const HomePage(),
-    const HomePage(),
-    const FriendListPage(),
+    const FriendsFeedPage(),
+    const ProfilePage(),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Обновляем для других кнопок
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_selectedIndex],
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      // floatingActionButton: FloatingActionButton(
-      //   shape: RoundedRectangleBorder(
-      //     borderRadius: BorderRadius.circular(100.0),
-      //   ),
-      //   onPressed: () {
-      //     Navigator.pushNamed(context, '/home');
-      //   },
-      //   backgroundColor: const Color.fromRGBO(109, 87, 252, 1),
-      //   foregroundColor: Colors.white,
-      //   focusColor: Colors.white,
-      //   hoverColor: Colors.white,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.home),
-      // ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'События',
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton(
+              shape: const CircleBorder(),
+              backgroundColor: const Color(0xFF6D57FC),
+              foregroundColor: Colors.white,
+              onPressed: () => showAddRoomBottomSheet(context),
+              child: const Icon(Icons.add),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF6D57FC),
+          borderRadius: BorderRadius.circular(32),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32),
+          child: BottomNavigationBar(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Главная',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.people_outline),
+                activeIcon: Icon(Icons.people),
+                label: 'Друзья',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Профиль',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white60,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            onTap: (index) => setState(() => _selectedIndex = index),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Главная',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Профиль',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        backgroundColor: const Color.fromRGBO(109, 87, 252, 1),
-        onTap: _onItemTapped,
+        ),
       ),
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
-// import 'package:wishlist/feature/presentation/pages/add_room_page.dart';
-// import 'package:wishlist/feature/presentation/pages/friend/friend_search_page.dart';
-// import 'package:wishlist/feature/presentation/pages/home_page.dart';
-
-// class NavigationPage extends StatefulWidget {
-//   const NavigationPage({super.key});
-
-//   @override
-//   State<NavigationPage> createState() => _NavigationPageState();
-// }
-
-// class _NavigationPageState extends State<NavigationPage> {
-//   int _selectedIndex = 0;
-
-//   // Список экранов для переключения
-//   final List<Widget> _screens = [
-//     const HomePage(),
-//     const AddRoomPage(),
-//     FriendSearchPage(),
-//   ];
-
-//   void _onItemTapped(int index) {
-//     setState(() {
-//       _selectedIndex = index; // Обновляем текущий выбранный индекс
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: _screens[_selectedIndex],
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: const <BottomNavigationBarItem>[
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.home),
-//             label: 'Главная',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.add),
-//             label: 'Добавить',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.person),
-//             label: 'Друзья',
-//           ),
-//         ],
-//         currentIndex: _selectedIndex, // Устанавливаем текущий индекс
-//         selectedItemColor: Colors.green,
-//         onTap: _onItemTapped, // Обработка нажатия
-//       ),
-//     );
-//   }
-// }

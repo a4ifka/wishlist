@@ -42,6 +42,7 @@ class RoomRepositoryImpl implements RoomRepository {
       id: room.id,
       name: room.name,
       isPublic: room.isPublic,
+      eventDate: room.eventDate,
     );
     try {
       final createdRoom = await remoteDataSource.createRoom(roomModel);
@@ -60,6 +61,7 @@ class RoomRepositoryImpl implements RoomRepository {
         id: room.id,
         name: room.name,
         isPublic: room.isPublic,
+        eventDate: room.eventDate,
       );
       await remoteDataSource.updateRoom(roomModel);
       return const Right(null);

@@ -40,6 +40,8 @@ class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
         await supabaseClient.from('rooms').insert({
       'name': room.name,
       'is_public': room.isPublic,
+      if (room.eventDate != null)
+        'event_date': room.eventDate!.toIso8601String().substring(0, 10),
     }).select();
     return data;
   }

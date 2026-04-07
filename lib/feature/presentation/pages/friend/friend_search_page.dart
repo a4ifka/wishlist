@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
 import 'package:wishlist/main.dart';
@@ -9,96 +10,304 @@ class FriendSearchPage extends StatelessWidget {
   FriendSearchPage({super.key});
 
   final _searchController = TextEditingController();
+
+  static const _purple = Color.fromRGBO(109, 87, 252, 1);
+  static const _lightPurple = Color.fromRGBO(155, 121, 246, 1);
+
+  void _search(BuildContext context) {
+    final query = _searchController.text.trim();
+    if (query.isNotEmpty) {
+      context.read<FriendCubit>().searchUsers(query);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Поиск друзкй'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_alert),
-            onPressed: () {
-              Navigator.pushNamed(context, '/request-friend');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.pushNamed(context, '/list-friend');
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search by username',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    context
-                        .read<FriendCubit>()
-                        .searchUsers(_searchController.text);
-                  },
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Шапка ──────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 20, 16, 0),
+              child: Row(
+                children: [
+                    IconButton(
+                    icon: SvgPicture.asset('assets/back.svg'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Поиск',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF6D57FC),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Заявки
+                  _HeaderButton(
+                    icon: Icons.notifications_none_rounded,
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/request-friend'),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ── Поиск ──────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(247, 247, 249, 1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onSubmitted: (_) => _search(context),
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: 'Введите имя пользователя...',
+                    hintStyle:
+                        const TextStyle(color: Colors.grey, fontSize: 15),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    suffixIcon: BlocBuilder<FriendCubit, FriendState>(
+                      builder: (context, state) {
+                        if (state is FriendStart) {
+                          return const Padding(
+                            padding: EdgeInsets.all(12),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: _purple,
+                              ),
+                            ),
+                          );
+                        }
+                        return IconButton(
+                          icon: const Icon(Icons.arrow_forward_rounded,
+                              color: _purple),
+                          onPressed: () => _search(context),
+                        );
+                      },
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
                 ),
               ),
-              onSubmitted: (value) {
-                context.read<FriendCubit>().searchUsers(value);
-              },
             ),
-          ),
-          Expanded(
-            child: BlocBuilder<FriendCubit, FriendState>(
-              builder: (context, state) {
-                if (state is FriendSearchLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is FriendError) {
-                  return Center(child: Text(state.message));
-                } else if (state is FriendSearchSuccess) {
-                  return ListView.builder(
-                    itemCount: state.users.length,
-                    itemBuilder: (context, index) {
-                      final user = state.users[index];
-                      return ListTile(
-                        title: Text(user.name),
-                        trailing: IconButton(
-                          onPressed: () {
-                            final currentUserId = supabase.auth.currentUser?.id;
-                            if (currentUserId != null) {
+
+            const SizedBox(height: 24),
+
+            // ── Результаты ─────────────────────────────────────────
+            Expanded(
+              child: BlocConsumer<FriendCubit, FriendState>(
+                listener: (context, state) {
+                  if (state is FriendActionSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Запрос отправлен'),
+                        backgroundColor: _lightPurple,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    );
+                  } else if (state is FriendError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.redAccent,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is FriendSearchSuccess) {
+                    if (state.users.isEmpty) {
+                      return const _EmptyState(
+                        icon: Icons.person_search_outlined,
+                        text: 'Никого не нашли',
+                        sub: 'Попробуй другое имя',
+                      );
+                    }
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      itemCount: state.users.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        return _UserCard(
+                          user: state.users[index],
+                          onAdd: () {
+                            final me = supabase.auth.currentUser?.id;
+                            if (me != null) {
                               context.read<FriendCubit>().sentFriendRequest(
-                                    currentUserId,
-                                    user.uuid,
+                                    me,
+                                    state.users[index].uuid,
                                   );
                             }
                           },
-                          icon: Icon(Icons.person_add),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    );
+                  }
+
+                  return const _EmptyState(
+                    icon: Icons.search_rounded,
+                    text: 'Начни поиск',
+                    sub: 'Введи имя пользователя выше',
                   );
-                } else {
-                  return Center(child: Text('нету'));
-                }
-              },
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Вспомогательные виджеты ───────────────────────────────────────────────────
+
+class _HeaderButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(247, 247, 249, 1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: const Color.fromRGBO(109, 87, 252, 1)),
+      ),
+    );
+  }
+}
+
+class _UserCard extends StatelessWidget {
+  final UserEntity user;
+  final VoidCallback onAdd;
+
+  const _UserCard({required this.user, required this.onAdd});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(247, 247, 249, 1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          // Аватар
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: const Color.fromRGBO(199, 181, 250, 0.5),
+            child: Text(
+              user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color.fromRGBO(109, 87, 252, 1),
+              ),
             ),
           ),
-          BlocListener<FriendCubit, FriendState>(
-            listener: (context, state) {
-              if (state is FriendActionSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Запрос отправлен')),
-                );
-              } else if (state is FriendError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)),
-                );
-              }
-            },
-            child: const SizedBox(),
+          const SizedBox(width: 12),
+
+          // Имя
+          Expanded(
+            child: Text(
+              user.name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          // Кнопка добавить
+          GestureDetector(
+            onTap: onAdd,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(109, 87, 252, 1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Добавить',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final String sub;
+
+  const _EmptyState({
+    required this.icon,
+    required this.text,
+    required this.sub,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 64, color: Colors.grey.shade300),
+          const SizedBox(height: 12),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            sub,
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
           ),
         ],
       ),

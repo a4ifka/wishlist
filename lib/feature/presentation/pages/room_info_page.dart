@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
 
@@ -33,34 +35,39 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
       body: Column(
         children: [
           const SizedBox(height: 45),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: IconButton(
-                  icon: Image.asset('assets/back.png'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: SvgPicture.asset('assets/back.svg'),
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-            ],
+                const Spacer(),
+                _InfoChip(label: roomEntity.isPublic ? 'Публичный' : 'Приватный'),
+                if (roomEntity.eventDate != null) ...[
+                  const SizedBox(width: 8),
+                  _InfoChip(
+                    label: DateFormat('d MMMM yyyy', 'ru').format(roomEntity.eventDate!),
+                  ),
+                ],
+              ],
+            ),
           ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Text(
-                  roomEntity.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(109, 87, 252, 1),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                roomEntity.name,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(109, 87, 252, 1),
                 ),
               ),
-            ],
+            ),
           ),
           Expanded(
             child: BlocBuilder<WishCubit, WishState>(
@@ -128,6 +135,31 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  final String label;
+
+  const _InfoChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(199, 181, 250, 0.4),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: Color.fromRGBO(109, 87, 252, 1),
+        ),
       ),
     );
   }

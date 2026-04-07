@@ -6,7 +6,6 @@ import 'package:wishlist/feature/presentation/cubit/room_cubit/room_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_state.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
-import 'package:wishlist/feature/presentation/widgets/add_room_bottom_sheet.dart';
 
 import 'package:wishlist/feature/presentation/widgets/room_list_item.dart';
 import 'package:wishlist/main.dart';
@@ -44,19 +43,23 @@ class _HomePageState extends State<HomePage> {
         .subscribe();
     print('listen changes --> $listen');
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Главная'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showAddRoomBottomSheet(context);
-            },
-          ),
-        ],
-      ),
+      backgroundColor: Colors.white,
       body: Column(children: [
-        const SizedBox(height: 35),
+        const SizedBox(height: 70),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: Text(
+                'Главная',
+                style: TextStyle(
+                    color: Color.fromRGBO(109, 87, 252, 1), fontSize: 28),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 25),
         Row(
           children: [
             Padding(
@@ -136,7 +139,9 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(height: 10),
                               BlocBuilder<WishCubit, WishState>(
                                 builder: (context, state) {
-                                  final count = state is WishCountsLoaded ? state.myWishes : 0;
+                                  final count = state is WishCountsLoaded
+                                      ? state.myWishes
+                                      : 0;
                                   return Text(
                                     count.toString(),
                                     style: const TextStyle(
@@ -194,7 +199,9 @@ class _HomePageState extends State<HomePage> {
                                     const SizedBox(height: 10),
                                     BlocBuilder<WishCubit, WishState>(
                                       builder: (context, state) {
-                                        final count = state is WishCountsLoaded ? state.completed : 0;
+                                        final count = state is WishCountsLoaded
+                                            ? state.completed
+                                            : 0;
                                         return Text(
                                           count.toString(),
                                           style: const TextStyle(
@@ -249,7 +256,9 @@ class _HomePageState extends State<HomePage> {
                                     const SizedBox(height: 10),
                                     BlocBuilder<WishCubit, WishState>(
                                       builder: (context, state) {
-                                        final count = state is WishCountsLoaded ? state.myBooking : 0;
+                                        final count = state is WishCountsLoaded
+                                            ? state.myBooking
+                                            : 0;
                                         return Text(
                                           count.toString(),
                                           style: const TextStyle(
