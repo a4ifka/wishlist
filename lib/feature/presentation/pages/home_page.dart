@@ -331,6 +331,7 @@ class _HomePageState extends State<HomePage> {
                         return RoomListItem(
                           roomEntity: state.rooms[index],
                           lengths: index,
+                          wishesCount: 0,
                         );
                       },
                     ),

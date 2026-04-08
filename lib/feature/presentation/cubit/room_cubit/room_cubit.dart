@@ -34,6 +34,7 @@ class RoomCubit extends Cubit<RoomState> {
         (rooms) => RoomsLoaded(rooms: rooms)));
   }
 
+
   // Future<void> fetchRoomById(RoomParamsId params) async {
   //   emit(RoomLoading());
   //   final result = await getRoomById(params);

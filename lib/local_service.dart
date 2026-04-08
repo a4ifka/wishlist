@@ -128,8 +128,10 @@ Future<void> init() async {
   sl.registerLazySingleton<FulfillWish>(() => FulfillWish(repository: sl()));
   sl.registerLazySingleton<GetCompleted>(() => GetCompleted(repository: sl()));
   sl.registerLazySingleton<GetMyBooking>(() => GetMyBooking(repository: sl()));
-  sl.registerLazySingleton<GetMyWishesCount>(() => GetMyWishesCount(repository: sl()));
-  sl.registerLazySingleton<UploadWishImage>(() => UploadWishImage(repository: sl()));
+  sl.registerLazySingleton<GetMyWishesCount>(
+      () => GetMyWishesCount(repository: sl()));
+  sl.registerLazySingleton<UploadWishImage>(
+      () => UploadWishImage(repository: sl()));
 
   sl.registerLazySingleton<GetUserInfo>(() => GetUserInfo(repository: sl()));
   sl.registerLazySingleton<CreateUser>(() => CreateUser(repository: sl()));
@@ -142,8 +144,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton<RoomRepository>(
       () => RoomRepositoryImpl(remoteDataSource: sl()));
-  sl.registerLazySingleton<RoomRemoteDataSource>(
-      () => RoomRemoteDataSourceImpl(supabaseClient: Supabase.instance.client));
+  sl.registerLazySingleton<RoomRemoteDataSource>(() => RoomRemoteDataSourceImpl(
+      supabaseClient: Supabase.instance.client, wishRemoteDataSource: sl()));
 
   sl.registerLazySingleton<WishRepository>(
       () => WishRepositoryImpl(remoteDataSource: sl()));
@@ -163,7 +165,9 @@ Future<void> init() async {
         ozon: sl(),
         yandexMarket: sl(),
       ));
-  sl.registerLazySingleton<WildberriesDataSource>(() => WildberriesDataSource());
+  sl.registerLazySingleton<WildberriesDataSource>(
+      () => WildberriesDataSource());
   sl.registerLazySingleton<OzonDataSource>(() => OzonDataSource());
-  sl.registerLazySingleton<YandexMarketDataSource>(() => YandexMarketDataSource());
+  sl.registerLazySingleton<YandexMarketDataSource>(
+      () => YandexMarketDataSource());
 }
