@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
-
 import 'package:wishlist/feature/presentation/widgets/wish_list_item.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
+
 
 class RoomInfoPage extends StatefulWidget {
   const RoomInfoPage({super.key});
@@ -15,23 +17,30 @@ class RoomInfoPage extends StatefulWidget {
 }
 
 class _RoomInfoPageState extends State<RoomInfoPage> {
+  bool _initialized = false;
+  late RoomEntity _room;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      _room = ModalRoute.of(context)!.settings.arguments as RoomEntity;
+      context.read<WishCubit>().fetchWishesByRoom(_room.id);
+    }
+  }
+
+  void _share(AppLocalizations l10n) {
+    final url = 'https://wishgift-blue.vercel.app?room=${_room.id}';
+    Share.share(l10n.inviteText(_room.name, url));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final roomEntity = ModalRoute.of(context)!.settings.arguments as RoomEntity;
-    context.read<WishCubit>().fetchWishesByRoom(roomEntity.id);
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(roomEntity.name),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.add),
-      //       onPressed: () {
-      //         Navigator.pushNamed(context, '/add-wish',
-      //             arguments: roomEntity.id);
-      //       },
-      //     ),
-      //   ],
-      // ),
       body: Column(
         children: [
           const SizedBox(height: 45),
@@ -44,11 +53,26 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
                   onPressed: () => Navigator.pop(context),
                 ),
                 const Spacer(),
-                _InfoChip(label: roomEntity.isPublic ? 'Публичный' : 'Приватный'),
-                if (roomEntity.eventDate != null) ...[
+                _InfoChip(
+                  label: _room.isPublic ? l10n.publicLabel : l10n.privateLabel,
+                ),
+                if (_room.eventDate != null) ...[
                   const SizedBox(width: 8),
                   _InfoChip(
-                    label: DateFormat('d MMMM yyyy', 'ru').format(roomEntity.eventDate!),
+                    label: DateFormat('d MMMM yyyy', locale)
+                        .format(_room.eventDate!),
+                  ),
+                ],
+                // Кнопка шаринга — только для публичных вишлистов
+                if (_room.isPublic) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.ios_share_rounded,
+                      color: Color(0xFF6D57FC),
+                    ),
+                    tooltip: l10n.share,
+                    onPressed: () => _share(l10n),
                   ),
                 ],
               ],
@@ -60,7 +84,7 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                roomEntity.name,
+                _room.name,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -74,35 +98,25 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
               builder: (context, state) {
                 if (state is WishesLoaded) {
                   if (state.wishes.isEmpty) {
-                    return const Center(child: Text('Вы ничего не добавили'));
-                  } else {
-                    return GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 0.7,
-                      ),
-                      itemCount: state.wishes.length,
-                      itemBuilder: (context, index) {
-                        return WishListItem(product: state.wishes[index]);
-                      },
-                    );
+                    return Center(child: Text(l10n.noWishesYet));
                   }
+                  return GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.7,
+                    ),
+                    itemCount: state.wishes.length,
+                    itemBuilder: (context, index) {
+                      return WishListItem(product: state.wishes[index]);
+                    },
+                  );
                 } else if (state is WishError) {
                   return Center(child: Text(state.message));
                 } else {
-                  return const Center(
-                    child: Text('Загрузка...',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontFamily: 'Nunito',
-                          fontWeight: FontWeight.w500,
-                          height: 0,
-                        )),
-                  );
+                  return Center(child: Text(l10n.loading));
                 }
               },
             ),
@@ -122,13 +136,13 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/add-wish',
-                      arguments: roomEntity.id);
+                      arguments: _room.id);
                 },
-                child: const Text(
-                  'Добавить',
-                  style: TextStyle(
-                    fontSize: 16, // Размер текста
-                    fontWeight: FontWeight.w600, // Жирность текста
+                child: Text(
+                  l10n.add,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -164,21 +178,3 @@ class _InfoChip extends StatelessWidget {
     );
   }
 }
-
-      // body: Center(
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(8.0),
-          // child: GridView.builder(
-          //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //     crossAxisCount: 2,
-          //     crossAxisSpacing: 10,
-          //     mainAxisSpacing: 10,
-          //     childAspectRatio: 0.7,
-          //   ),
-          //   itemCount: products.length,
-          //   itemBuilder: (context, index) {
-          //     return WishListItem(product: products[index]);
-          //   },
-          // ),
-      //   ),
-      // ),

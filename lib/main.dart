@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,6 +19,7 @@ import 'package:wishlist/feature/presentation/pages/friend/friend_request_page.d
 import 'package:wishlist/feature/presentation/pages/friend/friend_rooms_page.dart';
 import 'package:wishlist/feature/presentation/pages/friend/friend_search_page.dart';
 import 'package:wishlist/feature/presentation/pages/home_page.dart';
+import 'package:wishlist/feature/presentation/pages/invite_page.dart';
 import 'package:wishlist/feature/presentation/pages/navigation_page.dart';
 import 'package:wishlist/feature/presentation/pages/room_info_page.dart';
 import 'package:wishlist/feature/presentation/pages/auth/sign_in_page.dart';
@@ -27,6 +31,8 @@ import 'package:wishlist/feature/presentation/pages/wish_info_page.dart';
 import 'package:wishlist/feature/presentation/cubit/locale_cubit/locale_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/product_cubit/product_cubit.dart';
 import 'package:wishlist/local_service.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,16 +48,58 @@ Future<void> main() async {
 
 final supabase = Supabase.instance.client;
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   final Locale initialLocale;
   const MainPage({super.key, required this.initialLocale});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  late final AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _appLinks = AppLinks();
+    _initDeepLinks();
+  }
+
+  Future<void> _initDeepLinks() async {
+    // Ссылка, которая открыла приложение (пока оно было закрыто)
+    final initial = await _appLinks.getInitialLink();
+    if (initial != null) {
+      // Ждём, пока NavigatorState будет готов
+      WidgetsBinding.instance.addPostFrameCallback((_) => _handleLink(initial));
+    }
+
+    // Ссылки пока приложение уже открыто
+    _linkSub = _appLinks.uriLinkStream.listen(_handleLink);
+  }
+
+  void _handleLink(Uri uri) {
+    if (uri.scheme == 'wishlist' && uri.host == 'invite') {
+      final roomId = int.tryParse(uri.queryParameters['room'] ?? '');
+      if (roomId != null) {
+        navigatorKey.currentState?.pushNamed('/invite', arguments: roomId);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocaleCubit>(
-          create: (context) => LocaleCubit(initialLocale),
+          create: (context) => LocaleCubit(widget.initialLocale),
         ),
         BlocProvider<SignInUserCubit>(
           create: (context) => sl<SignInUserCubit>(),
@@ -74,46 +122,48 @@ class MainPage extends StatelessWidget {
       ],
       child: BlocBuilder<LocaleCubit, Locale>(
         builder: (context, locale) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        locale: locale,
-        builder: (context, child) => GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: child,
+          navigatorKey: navigatorKey,
+          debugShowCheckedModeBanner: false,
+          locale: locale,
+          builder: (context, child) => GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: child,
+          ),
+          home: const SplashPage(),
+          routes: {
+            '/signIn': (context) => const SignInPage(),
+            '/signUp': (context) => const SignUpPage(),
+            '/create-user': (context) => const CreateUserPage(),
+            '/home': (context) => const HomePage(),
+            '/home/info': (context) => const RoomInfoPage(),
+            '/home/wish': (context) => const WishInfoPage(),
+            '/add-room': (context) => const AddRoomPage(),
+            '/add-wish': (context) => BlocProvider<ProductCubit>(
+                  create: (_) => sl<ProductCubit>(),
+                  child: const AddWishPage(),
+                ),
+            '/navigation': (context) => const NavigationPage(),
+            '/search-friend': (context) => FriendSearchPage(),
+            '/request-friend': (context) => const FriendRequestPage(),
+            '/list-friend': (context) => const FriendListPage(),
+            '/rooms-friend': (context) => const FriendRoomsPage(),
+            '/book-wishes': (context) => const BookWishFriendPage(),
+            '/invite': (context) => const InvitePage(),
+          },
+          theme: ThemeData(
+            fontFamily: 'Montserrat',
+          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ru'),
+            Locale('en'),
+          ],
         ),
-        home: const SplashPage(),
-        routes: {
-          '/signIn': (context) => SignInPage(),
-          '/signUp': (context) => SignUpPage(),
-          '/create-user': (context) => CreateUserPage(),
-          '/home': (context) => const HomePage(),
-          '/home/info': (context) => RoomInfoPage(),
-          '/home/wish': (context) => WishInfoPage(),
-          '/add-room': (context) => const AddRoomPage(),
-          '/add-wish': (context) => BlocProvider<ProductCubit>(
-                create: (_) => sl<ProductCubit>(),
-                child: const AddWishPage(),
-              ),
-          '/navigation': (context) => NavigationPage(),
-          '/search-friend': (context) => FriendSearchPage(),
-          '/request-friend': (context) => FriendRequestPage(),
-          '/list-friend': (context) => FriendListPage(),
-          '/rooms-friend': (context) => FriendRoomsPage(),
-          '/book-wishes': (context) => BookWishFriendPage(),
-        },
-        theme: ThemeData(
-          fontFamily: 'Montserrat',
-        ),
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('ru'),
-          Locale('en'),
-        ],
-      ),
       ),
     );
   }

@@ -59,6 +59,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override String get enterWishlistName => 'Enter wishlist name';
   @override String get enterEventDate => 'Enter event date';
 
+  // --- Share / Invite ---
+  @override String get share => 'Share';
+  @override String inviteText(String roomName, String url) => 'Check out my wishlist "$roomName"!\n$url';
+  @override String get noWishesYet => 'The list is empty';
+  @override String get publicLabel => 'Public';
+  @override String get privateLabel => 'Private';
+
   // --- Navigation ---
   @override String get navHome => 'Home';
   @override String get navFriends => 'Friends';
