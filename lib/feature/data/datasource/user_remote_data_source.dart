@@ -10,6 +10,7 @@ abstract class UserRemoteDataSources {
   Future<void> updateBirthDate(DateTime birthDate);
   Future<void> createUser(UserModel userModel);
   Future<void> signOutUser();
+  Future<void> updateFcmToken(String token);
 }
 
 class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
@@ -77,5 +78,13 @@ class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
           'birth_date': birthDate.toIso8601String().substring(0, 10),
         })
         .eq('uuid', supabase.auth.currentUser!.id);
+  }
+
+  @override
+  Future<void> updateFcmToken(String token) async {
+    await supabaseClient
+        .from('users_info')
+        .update({'fcm_token': token})
+        .eq('uuid', supabaseClient.auth.currentUser!.id);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wishlist/core/services/notification_service.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/user_cubit/user_state.dart';
 
@@ -28,6 +29,7 @@ class SplashPageState extends State<SplashPage> {
 
     final session = supabase.auth.currentSession;
     if (session != null) {
+      NotificationService.onUserLoggedIn();
       context.read<UserCubit>().fetchUserInfo(supabase.auth.currentUser!.id);
     } else {
       Navigator.of(context).pushReplacementNamed('/signUp');

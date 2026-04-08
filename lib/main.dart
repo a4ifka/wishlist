@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wishlist/core/services/notification_service.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/room_cubit/room_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
@@ -36,11 +39,14 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await Supabase.initialize(
     url: 'https://jmbjjfpeotrikittygdt.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptYmpqZnBlb3RyaWtpdHR5Z2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NTUzMDcsImV4cCI6MjA5MDAzMTMwN30.pJCKLgD6CzYUwuCd53vTbDwtH23FbP4vt4svFwnXGpY',
   );
+  await NotificationService.initialize();
   final savedLocale = await LocaleCubit.loadSaved();
   init();
   runApp(MainPage(initialLocale: savedLocale));
