@@ -5,6 +5,7 @@ import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
 import 'package:wishlist/feature/presentation/widgets/friend_rooms_list_item.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 
 class FriendRoomsPage extends StatefulWidget {
   const FriendRoomsPage({super.key});
@@ -16,11 +17,12 @@ class FriendRoomsPage extends StatefulWidget {
 class _FriendRoomsPageState extends State<FriendRoomsPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final userEntity = ModalRoute.of(context)!.settings.arguments as UserEntity;
     context.read<FriendCubit>().fetchFriendRooms(userEntity.uuid);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Комнаты ${userEntity.name}'),
+        title: Text(l10n.friendRooms(userEntity.name)),
       ),
       body: Column(
         children: [
@@ -35,9 +37,9 @@ class _FriendRoomsPageState extends State<FriendRoomsPage> {
                 } else if (state is FriendError) {
                   return Center(child: Text(state.message));
                 } else {
-                  return const Center(
-                    child: Text('Загрузка...',
-                        style: TextStyle(
+                  return Center(
+                    child: Text(l10n.loading,
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 20,
                           fontFamily: 'Nunito',

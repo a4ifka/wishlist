@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
 import 'package:wishlist/feature/presentation/widgets/book_wish_list_item.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 
 class BookWishFriendPage extends StatefulWidget {
   const BookWishFriendPage({super.key});
@@ -15,9 +16,10 @@ class BookWishFriendPage extends StatefulWidget {
 class _BookWishFriendPageState extends State<BookWishFriendPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final roomEntity = ModalRoute.of(context)!.settings.arguments as RoomEntity;
     context.read<WishCubit>().fetchWishesByRoom(roomEntity.id);
-    var listen = Supabase.instance.client
+    Supabase.instance.client
         .channel('public:wishes')
         .onPostgresChanges(
             event: PostgresChangeEvent.all,
@@ -27,7 +29,6 @@ class _BookWishFriendPageState extends State<BookWishFriendPage> {
               context.read<WishCubit>().fetchWishesByRoom(roomEntity.id);
             })
         .subscribe();
-    print('listen changes --> $listen');
 
     return Scaffold(
         appBar: AppBar(
@@ -55,9 +56,9 @@ class _BookWishFriendPageState extends State<BookWishFriendPage> {
                   } else if (state is WishError) {
                     return Center(child: Text(state.message));
                   } else {
-                    return const Center(
-                      child: Text('Загрузка...',
-                          style: TextStyle(
+                    return Center(
+                      child: Text(l10n.loading,
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 20,
                             fontFamily: 'Nunito',
@@ -73,16 +74,16 @@ class _BookWishFriendPageState extends State<BookWishFriendPage> {
               listener: (context, state) {
                 if (state is WishesSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Успешно '),
+                    SnackBar(
+                      content: Text(l10n.success),
                       backgroundColor: Colors.greenAccent,
                     ),
                   );
                   context.read<WishCubit>().fetchWishesByRoom(roomEntity.id);
                 } else if (state is WishError) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Ошибка '),
+                    SnackBar(
+                      content: Text(l10n.operationError),
                       backgroundColor: Colors.redAccent,
                     ),
                   );

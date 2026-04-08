@@ -3,6 +3,7 @@ import 'package:wishlist/feature/presentation/pages/friend/friends_feed_page.dar
 import 'package:wishlist/feature/presentation/pages/home_page.dart';
 import 'package:wishlist/feature/presentation/pages/profile_page.dart';
 import 'package:wishlist/feature/presentation/widgets/add_room_bottom_sheet.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
@@ -22,6 +23,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: _screens[_selectedIndex],
       floatingActionButton: _selectedIndex == 0
@@ -50,21 +52,21 @@ class _NavigationPageState extends State<NavigationPage> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(32),
           child: BottomNavigationBar(
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home),
-                label: 'Главная',
+                icon: const Icon(Icons.home_outlined),
+                activeIcon: const Icon(Icons.home),
+                label: l10n.navHome,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.people_outline),
-                activeIcon: Icon(Icons.people),
-                label: 'Друзья',
+                icon: const Icon(Icons.people_outline),
+                activeIcon: const Icon(Icons.people),
+                label: l10n.navFriends,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline),
-                activeIcon: Icon(Icons.person),
-                label: 'Профиль',
+                icon: const Icon(Icons.person_outline),
+                activeIcon: const Icon(Icons.person),
+                label: l10n.navProfile,
               ),
             ],
             currentIndex: _selectedIndex,

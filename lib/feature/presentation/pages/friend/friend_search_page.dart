@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/main.dart';
 
 class FriendSearchPage extends StatelessWidget {
@@ -23,6 +24,7 @@ class FriendSearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -33,17 +35,17 @@ class FriendSearchPage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(8, 20, 16, 0),
               child: Row(
                 children: [
-                    IconButton(
+                  IconButton(
                     icon: SvgPicture.asset('assets/back.svg'),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Поиск',
-                          style: TextStyle(
+                          l10n.search,
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF6D57FC),
@@ -77,7 +79,7 @@ class FriendSearchPage extends StatelessWidget {
                   onSubmitted: (_) => _search(context),
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
-                    hintText: 'Введите имя пользователя...',
+                    hintText: l10n.enterUsername,
                     hintStyle:
                         const TextStyle(color: Colors.grey, fontSize: 15),
                     prefixIcon: const Icon(Icons.search, color: Colors.grey),
@@ -119,7 +121,7 @@ class FriendSearchPage extends StatelessWidget {
                   if (state is FriendActionSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Запрос отправлен'),
+                        content: Text(l10n.requestSent),
                         backgroundColor: _lightPurple,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
@@ -141,10 +143,10 @@ class FriendSearchPage extends StatelessWidget {
                 builder: (context, state) {
                   if (state is FriendSearchSuccess) {
                     if (state.users.isEmpty) {
-                      return const _EmptyState(
+                      return _EmptyState(
                         icon: Icons.person_search_outlined,
-                        text: 'Никого не нашли',
-                        sub: 'Попробуй другое имя',
+                        text: l10n.nobodyFound,
+                        sub: l10n.tryAnotherName,
                       );
                     }
                     return ListView.separated(
@@ -168,10 +170,10 @@ class FriendSearchPage extends StatelessWidget {
                     );
                   }
 
-                  return const _EmptyState(
+                  return _EmptyState(
                     icon: Icons.search_rounded,
-                    text: 'Начни поиск',
-                    sub: 'Введи имя пользователя выше',
+                    text: l10n.startSearch,
+                    sub: l10n.enterUsernameAbove,
                   );
                 },
               ),
@@ -261,9 +263,9 @@ class _UserCard extends StatelessWidget {
                 color: const Color.fromRGBO(109, 87, 252, 1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
-                'Добавить',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.add,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

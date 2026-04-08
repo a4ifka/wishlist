@@ -23,8 +23,22 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
+  OutlineInputBorder _border({bool focused = false}) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide(
+        color: focused
+            ? const Color(0xFF6D57FC)
+            : const Color.fromRGBO(155, 121, 246, 1),
+        width: focused ? 2 : 1.5,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -33,234 +47,174 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 48),
-
-                    Text(
-                      AppLocalizations.of(context)!.login,
+                const SizedBox(height: 48),
+                Text(
+                  l10n.login,
+                  style: const TextStyle(
+                    color: Color(0xFF6D57FC),
+                    fontSize: 36,
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  l10n.email,
+                  style: const TextStyle(
+                    color: Color(0xFF120E00),
+                    fontSize: 14,
+                    fontFamily: 'Verdana',
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    hintText: l10n.email,
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: _border(),
+                    enabledBorder: _border(),
+                    focusedBorder: _border(focused: true),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.password,
+                  style: const TextStyle(
+                    color: Color(0xFF120E00),
+                    fontSize: 14,
+                    fontFamily: 'Verdana',
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    hintText: l10n.password,
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    border: _border(),
+                    enabledBorder: _border(),
+                    focusedBorder: _border(focused: true),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: const Color(0xFF9B79F6),
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.featureInDevelopment),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      l10n.restorePassword,
                       style: const TextStyle(
                         color: Color(0xFF6D57FC),
-                        fontSize: 36,
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    const Text(
-                      'Email',
-                      style: TextStyle(
-                        color: Color(0xFF120E00),
                         fontSize: 14,
-                        fontFamily: 'Verdana',
+                        fontFamily: 'Roboto',
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 6),
-
-                    Container(
-                      width: double.infinity,
-                      height: 54,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFF6F5F8),
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            width: 2,
-                            color: Color(0xFF9B79F6),
-                          ),
-                          borderRadius: BorderRadius.circular(53),
-                        ),
-                      ),
-                      child: TextField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                          hintText: AppLocalizations.of(context)!.email,
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF616161),
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Color(0xFF120E00),
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context)!.password,
-                      style: const TextStyle(
-                        color: Color(0xFF120E00),
-                        fontSize: 14,
-                        fontFamily: 'Verdana',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      width: double.infinity,
-                      height: 54,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFF6F5F8),
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            width: 2,
-                            color: Color(0xFF9B79F6),
-                          ),
-                          borderRadius: BorderRadius.circular(53),
-                        ),
-                      ),
-                      child: TextField(
-                        controller: passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                          hintText: AppLocalizations.of(context)!.password,
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF616161),
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: const Color(0xFF9B79F6),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Color(0xFF616161),
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('В разработке)'),
-                              backgroundColor: Colors.redAccent,
-                            ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text(
-                          'Восстановить пароль',
-                          style: TextStyle(
-                            color: Color(0xFF6D57FC),
-                            fontSize: 14,
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Картинка с человечком
-                    Center(
-                      child: Image.asset(
-                        'assets/login_pic.png',
-                        height: 250,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
+                  ),
                 ),
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<SignInUserCubit>().auth(
-                              emailController.text, passwordController.text);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6D57FC),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(77),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Войти',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Image.asset(
+                    'assets/login_pic.png',
+                    height: 250,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<SignInUserCubit>().auth(
+                          emailController.text, passwordController.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6D57FC),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(77),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      l10n.signInButton,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, "/signUp");
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text(
-                          'Создать аккаунт',
-                          style: TextStyle(
-                            color: Color(0xFF6D57FC),
-                            fontSize: 16,
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/signUp");
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      l10n.createAccount,
+                      style: const TextStyle(
+                        color: Color(0xFF6D57FC),
+                        fontSize: 16,
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    BlocListener<SignInUserCubit, SignInUserState>(
-                      listener: (context, state) {
-                        if (state is SignInUserLoaded) {
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, "/navigation",
-                              arguments: state.user);
-                        } else if (state is SignInUserError) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Ошибка аутентификации!'),
-                              backgroundColor: Colors.redAccent,
-                            ),
-                          );
-                        }
-                      },
-                      child: const SizedBox(),
-                    ),
-                  ],
+                  ),
+                ),
+                BlocListener<SignInUserCubit, SignInUserState>(
+                  listener: (context, state) {
+                    if (state is SignInUserLoaded) {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/navigation",
+                          arguments: state.user);
+                    } else if (state is SignInUserError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.authError),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    }
+                  },
+                  child: const SizedBox(),
                 ),
               ],
             ),

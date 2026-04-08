@@ -45,10 +45,14 @@ class RoomCubit extends Cubit<RoomState> {
 
   addRoom(RoomEntity roomEntity) async {
     emit(RoomStart());
-    final failureOrRoom = await createRoom(RoomParamsCreate(room: roomEntity));
-    emit(failureOrRoom.fold(
-        (failure) => RoomError(message: mapFailureFromMessage(failure)),
-        (room) => RoomLoaded(room: room)));
+    final result = await createRoom(RoomParamsCreate(room: roomEntity));
+    result.fold(
+      (failure) => emit(RoomError(message: mapFailureFromMessage(failure))),
+      (room) => emit(RoomLoaded(room: room)),
+    );
+    if (result.isRight()) {
+      await fetchRoomsByUser();
+    }
   }
 
   // Future<void> editRoom(RoomParamsUpdate params) async {

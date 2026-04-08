@@ -6,6 +6,7 @@ import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/domain/entities/user_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 
 class FriendsFeedPage extends StatefulWidget {
   const FriendsFeedPage({super.key});
@@ -37,6 +38,8 @@ class _FriendsFeedPageState extends State<FriendsFeedPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -48,21 +51,21 @@ class _FriendsFeedPageState extends State<FriendsFeedPage> {
               padding: const EdgeInsets.fromLTRB(24, 20, 16, 0),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Друзья',
-                          style: TextStyle(
+                          l10n.friends,
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: _purple,
                           ),
                         ),
                         Text(
-                          'Вишлисты твоих друзей',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          l10n.friendsWishlists,
+                          style: const TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -90,7 +93,6 @@ class _FriendsFeedPageState extends State<FriendsFeedPage> {
                         .expand((e) => e.value.map((r) => (e.key, r)))
                         .where((pair) => pair.$2.isPublic)
                         .toList()
-                      // Сортируем: ближайшие праздники вверху
                       ..sort((a, b) {
                         final da = a.$2.eventDate;
                         final db = b.$2.eventDate;
@@ -141,6 +143,7 @@ class _FriendsFeedPageState extends State<FriendsFeedPage> {
 class _FriendsMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () => _showFriendsMenu(context),
       child: Container(
@@ -149,14 +152,14 @@ class _FriendsMenuButton extends StatelessWidget {
           color: const Color(0xFF6D57FC),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.people_outline, color: Colors.white, size: 18),
-            SizedBox(width: 6),
+            const Icon(Icons.people_outline, color: Colors.white, size: 18),
+            const SizedBox(width: 6),
             Text(
-              'Друзья',
-              style: TextStyle(
+              l10n.friends,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -185,15 +188,16 @@ class _FriendsMenuSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Друзья',
-            style: TextStyle(
+          Text(
+            l10n.friends,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: _purple,
@@ -202,7 +206,7 @@ class _FriendsMenuSheet extends StatelessWidget {
           const SizedBox(height: 20),
           _MenuTile(
             icon: Icons.search_rounded,
-            label: 'Найти друга',
+            label: l10n.findFriend,
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/search-friend');
@@ -211,7 +215,7 @@ class _FriendsMenuSheet extends StatelessWidget {
           const SizedBox(height: 10),
           _MenuTile(
             icon: Icons.notifications_none_rounded,
-            label: 'Заявки в друзья',
+            label: l10n.friendRequests,
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/request-friend');
@@ -225,11 +229,11 @@ class _FriendsMenuSheet extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 12, bottom: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 8),
                       child: Text(
-                        'Мои друзья',
-                        style: TextStyle(
+                        l10n.myFriends,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
                           fontWeight: FontWeight.w500,
@@ -314,25 +318,27 @@ class _RoomFeedCard extends StatelessWidget {
 
   const _RoomFeedCard({required this.friend, required this.room});
 
-  String _daysLabel() {
+  (String, bool) _daysLabel(AppLocalizations l10n) {
     final date = room.eventDate;
-    if (date == null) return '';
+    if (date == null) return ('', false);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final event = DateTime(date.year, date.month, date.day);
     final diff = event.difference(today).inDays;
-    if (diff == 0) return 'Сегодня!';
-    if (diff == 1) return 'Завтра';
-    if (diff < 0) return '';
-    return 'Через $diff дн.';
+    if (diff == 0) return (l10n.today, true);
+    if (diff == 1) return (l10n.tomorrow, true);
+    if (diff < 0) return ('', false);
+    return (l10n.inNDays(diff), false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     final dateLabel = room.eventDate != null
-        ? DateFormat('d MMMM yyyy', 'ru').format(room.eventDate!)
+        ? DateFormat('d MMMM yyyy', locale).format(room.eventDate!)
         : null;
-    final daysLabel = _daysLabel();
+    final (daysLabel, isUrgent) = _daysLabel(l10n);
 
     return GestureDetector(
       onTap: () =>
@@ -379,7 +385,7 @@ class _RoomFeedCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: daysLabel == 'Сегодня!' || daysLabel == 'Завтра'
+                      color: isUrgent
                           ? const Color(0xFFFF9ECC).withValues(alpha: 0.3)
                           : _lightPurple.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(20),
@@ -389,9 +395,7 @@ class _RoomFeedCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: daysLabel == 'Сегодня!' || daysLabel == 'Завтра'
-                            ? Colors.pinkAccent
-                            : _purple,
+                        color: isUrgent ? Colors.pinkAccent : _purple,
                       ),
                     ),
                   ),
@@ -443,9 +447,9 @@ class _RoomFeedCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Смотреть и бронировать',
-                  style: TextStyle(
+                child: Text(
+                  l10n.viewAndBook,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -464,6 +468,7 @@ class _RoomFeedCard extends StatelessWidget {
 class _EmptyFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -471,18 +476,18 @@ class _EmptyFeed extends StatelessWidget {
           Icon(Icons.card_giftcard_outlined,
               size: 72, color: Colors.grey.shade300),
           const SizedBox(height: 12),
-          const Text(
-            'Пока тут пусто',
-            style: TextStyle(
+          Text(
+            l10n.feedEmpty,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.black54,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Добавь друзей, чтобы видеть их вишлисты',
-            style: TextStyle(fontSize: 13, color: Colors.grey),
+          Text(
+            l10n.addFriendsToSeeFeed,
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
@@ -495,9 +500,9 @@ class _EmptyFeed extends StatelessWidget {
                 color: const Color(0xFF6D57FC),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Text(
-                'Найти друзей',
-                style: TextStyle(
+              child: Text(
+                l10n.findFriends,
+                style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),

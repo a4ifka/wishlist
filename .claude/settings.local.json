@@ -17,7 +17,8 @@
       "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://basket-33.wbbasket.ru/vol6988/part698851/698851587/info/ru/price.json\")",
       "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://wbxcatalog-ru.wildberries.ru/nm-2-card/catalog?nm=698851587&locale=ru&lang=ru&curr=rub&dest=-1257786\" -H \"User-Agent: Mozilla/5.0\")",
       "Bash(curl -s \"https://basket-20.wbbasket.ru/vol3431/part343109/343109088/info/ru/card.json\")",
-      "Bash(curl -s \"https://wbninja.ru/parser/?s=343109088\" -H \"User-Agent: Mozilla/5.0\")"
+      "Bash(curl -s \"https://wbninja.ru/parser/?s=343109088\" -H \"User-Agent: Mozilla/5.0\")",
+      "Bash(flutter pub:*)"
     ]
   }
 }
