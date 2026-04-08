@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wishlist/core/services/notification_service.dart';
 import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/feature/presentation/cubit/sign_in_cubit/sign_in_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/sign_in_cubit/sign_in_state.dart';
@@ -202,6 +203,7 @@ class _SignInPageState extends State<SignInPage> {
                 BlocListener<SignInUserCubit, SignInUserState>(
                   listener: (context, state) {
                     if (state is SignInUserLoaded) {
+                      NotificationService.onUserLoggedIn();
                       Navigator.pop(context);
                       Navigator.pushNamed(context, "/navigation",
                           arguments: state.user);
