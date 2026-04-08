@@ -87,6 +87,13 @@ abstract class AppLocalizations {
   String get enterWishlistName;
   String get enterEventDate;
 
+  // --- Share / Invite ---
+  String get share;
+  String inviteText(String roomName, String url);
+  String get noWishesYet;
+  String get publicLabel;
+  String get privateLabel;
+
   // --- Navigation ---
   String get navHome;
   String get navFriends;

@@ -59,6 +59,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override String get enterWishlistName => 'Введите название вишлиста';
   @override String get enterEventDate => 'Укажите дату праздника';
 
+  // --- Share / Invite ---
+  @override String get share => 'Поделиться';
+  @override String inviteText(String roomName, String url) => 'Посмотри мой вишлист «$roomName»!\n$url';
+  @override String get noWishesYet => 'Список пока пуст';
+  @override String get publicLabel => 'Публичный';
+  @override String get privateLabel => 'Приватный';
+
   // --- Navigation ---
   @override String get navHome => 'Главная';
   @override String get navFriends => 'Друзья';
