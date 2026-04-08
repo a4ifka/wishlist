@@ -57,7 +57,7 @@ class _AddRoomPageState extends State<AddRoomPage> {
               ElevatedButton(
                 onPressed: () {
                   RoomEntity roomEntity = RoomEntity(
-                      id: 0, name: _nameController.text, isPublic: _isPublic);
+                      id: 0, name: _nameController.text, wishes: 0,isPublic: _isPublic);
                   context.read<RoomCubit>().addRoom(roomEntity);
                 },
                 child: const Text('Создать комнату'),

@@ -5,6 +5,7 @@ class RoomModel extends RoomEntity with EquatableMixin {
   const RoomModel({
     required super.id,
     required super.name,
+    required super.wishes,
     super.isPublic = false,
     super.eventDate,
   });
@@ -13,6 +14,7 @@ class RoomModel extends RoomEntity with EquatableMixin {
     return RoomModel(
       id: json['id'] as int,
       name: json['name'] as String,
+      wishes: json['wishes'] as int,
       isPublic: json['is_public'] as bool? ?? false,
       eventDate: json['event_date'] != null
           ? DateTime.tryParse(json['event_date'] as String)

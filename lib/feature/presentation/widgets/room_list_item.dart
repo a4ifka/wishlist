@@ -36,8 +36,12 @@ import 'package:wishlist/feature/domain/entities/room_entity.dart';
 class RoomListItem extends StatefulWidget {
   final RoomEntity roomEntity;
   final int lengths;
+  final int wishesCount;
   const RoomListItem(
-      {super.key, required this.roomEntity, required this.lengths});
+      {super.key,
+      required this.roomEntity,
+      required this.lengths,
+      required this.wishesCount});
 
   @override
   State<RoomListItem> createState() => _RoomListItemState();
@@ -61,7 +65,6 @@ class _RoomListItemState extends State<RoomListItem> {
         ),
         child: Stack(
           children: [
-            // Текст в верхнем левом углу
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 20),
               child: Column(
@@ -76,6 +79,13 @@ class _RoomListItemState extends State<RoomListItem> {
                     ),
                   ),
                   const SizedBox(height: 4),
+                  Text(
+                    widget.roomEntity.wishes.toString(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),

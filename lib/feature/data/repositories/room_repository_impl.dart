@@ -41,6 +41,7 @@ class RoomRepositoryImpl implements RoomRepository {
     RoomModel roomModel = RoomModel(
       id: room.id,
       name: room.name,
+      wishes: room.wishes,
       isPublic: room.isPublic,
       eventDate: room.eventDate,
     );
@@ -60,6 +61,7 @@ class RoomRepositoryImpl implements RoomRepository {
       final roomModel = RoomModel(
         id: room.id,
         name: room.name,
+        wishes: room.wishes,
         isPublic: room.isPublic,
         eventDate: room.eventDate,
       );

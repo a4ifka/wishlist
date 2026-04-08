@@ -1,4 +1,6 @@
+import 'package:html/parser.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wishlist/feature/data/datasource/wish_remote_data_source.dart';
 import 'package:wishlist/feature/data/models/room_model.dart';
 
 abstract class RoomRemoteDataSource {
@@ -13,8 +15,9 @@ abstract class RoomRemoteDataSource {
 
 class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
   final SupabaseClient supabaseClient;
-
-  RoomRemoteDataSourceImpl({required this.supabaseClient});
+  final WishRemoteDataSource wishRemoteDataSource;
+  RoomRemoteDataSourceImpl(
+      {required this.supabaseClient, required this.wishRemoteDataSource});
 
   @override
   Future<List<RoomModel>> getRoomsByUser() async {
@@ -23,15 +26,32 @@ class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
         .select()
         .eq('owner', supabaseClient.auth.currentUser!.id);
 
-    return response.map((room) => RoomModel.fromJson(room)).toList();
+    final enrichedRooms = await Future.wait(
+      response.map((room) async {
+        final list =
+            await wishRemoteDataSource.getWishesByRoom(room['id'] as int);
+        return {
+          ...room,
+          'wishes': list.length,
+        };
+      }),
+    );
+
+    return enrichedRooms.map((room) => RoomModel.fromJson(room)).toList();
   }
 
   @override
   Future<RoomModel> getRoomById(String roomId) async {
     final response =
         await supabaseClient.from('rooms').select().eq('id', roomId).single();
+    final list = await wishRemoteDataSource.getWishesByRoom(int.parse(roomId));
 
-    return RoomModel.fromJson(response);
+    final enrichedResponse = {
+      ...response,
+      'wishes': list.length,
+    };
+
+    return RoomModel.fromJson(enrichedResponse);
   }
 
   @override

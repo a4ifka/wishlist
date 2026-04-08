@@ -170,6 +170,7 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
                                 RoomEntity(
                                   id: 0,
                                   name: _nameController.text,
+                                  wishes: 0,
                                   isPublic: _isPublic,
                                   eventDate: _eventDate,
                                 ),
