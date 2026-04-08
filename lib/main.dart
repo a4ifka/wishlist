@@ -35,21 +35,23 @@ Future<void> main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptYmpqZnBlb3RyaWtpdHR5Z2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NTUzMDcsImV4cCI6MjA5MDAzMTMwN30.pJCKLgD6CzYUwuCd53vTbDwtH23FbP4vt4svFwnXGpY',
   );
+  final savedLocale = await LocaleCubit.loadSaved();
   init();
-  runApp(const MainPage());
+  runApp(MainPage(initialLocale: savedLocale));
 }
 
 final supabase = Supabase.instance.client;
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  final Locale initialLocale;
+  const MainPage({super.key, required this.initialLocale});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocaleCubit>(
-          create: (context) => LocaleCubit(),
+          create: (context) => LocaleCubit(initialLocale),
         ),
         BlocProvider<SignInUserCubit>(
           create: (context) => sl<SignInUserCubit>(),

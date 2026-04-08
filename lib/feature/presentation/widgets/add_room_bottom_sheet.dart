@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/room_cubit/room_cubit.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 
 void showAddRoomBottomSheet(BuildContext context) {
   showModalBottomSheet(
@@ -11,19 +12,22 @@ void showAddRoomBottomSheet(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (context) {
+    builder: (ctx) {
       return Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
         ),
-        child: const _AddRoomBottomSheet(),
+        child: BlocProvider.value(
+          value: context.read<RoomCubit>(),
+          child: const _AddRoomBottomSheet(),
+        ),
       );
     },
   );
 }
 
 class _AddRoomBottomSheet extends StatefulWidget {
-  const _AddRoomBottomSheet({Key? key}) : super(key: key);
+  const _AddRoomBottomSheet();
 
   @override
   State<_AddRoomBottomSheet> createState() => _AddRoomBottomSheetState();
@@ -69,6 +73,9 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(26, 20, 26, 16),
@@ -77,16 +84,18 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             RichText(
-              text: const TextSpan(
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              text: TextSpan(
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 children: [
                   TextSpan(
-                    text: 'Новый ',
-                    style: TextStyle(color: Colors.black),
+                    text: '${l10n.newWishlist.split(' ').first} ',
+                    style: const TextStyle(color: Colors.black),
                   ),
                   TextSpan(
-                    text: 'вишлист',
-                    style: TextStyle(color: Color.fromRGBO(109, 87, 252, 1)),
+                    text: l10n.newWishlist.split(' ').skip(1).join(' '),
+                    style: const TextStyle(
+                        color: Color.fromRGBO(109, 87, 252, 1)),
                   ),
                 ],
               ),
@@ -97,28 +106,26 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Название
                   TextFormField(
                     controller: _nameController,
-                    decoration: _inputDecoration('Название'),
+                    decoration: _inputDecoration(l10n.wishlistName),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Введите название вишлиста';
+                        return l10n.enterWishlistName;
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 12),
-
-                  // Дата праздника
                   GestureDetector(
                     onTap: _pickDate,
                     child: AbsorbPointer(
                       child: TextFormField(
                         decoration: _inputDecoration(
                           _eventDate != null
-                              ? DateFormat('d MMMM yyyy', 'ru').format(_eventDate!)
-                              : 'Дата праздника',
+                              ? DateFormat('d MMMM yyyy', locale)
+                                  .format(_eventDate!)
+                              : l10n.eventDate,
                           suffixIcon: _eventDate != null
                               ? GestureDetector(
                                   onTap: () =>
@@ -129,29 +136,23 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
                               : const Icon(Icons.calendar_today,
                                   color: Colors.grey),
                         ),
-                        validator: (value) {
-                          if (_eventDate == null) {
-                            return 'Укажите дату праздника';
-                          }
+                        validator: (_) {
+                          if (_eventDate == null) return l10n.enterEventDate;
                           return null;
                         },
                       ),
                     ),
                   ),
                   const SizedBox(height: 4),
-
-                  // Публичный
                   SwitchListTile(
-                    title: const Text('Публичная комната'),
-                    subtitle: const Text('Видна всем пользователям'),
+                    title: Text(l10n.publicRoom),
+                    subtitle: Text(l10n.publicRoomDesc),
                     contentPadding: EdgeInsets.zero,
                     activeThumbColor: const Color.fromRGBO(109, 87, 252, 1),
                     value: _isPublic,
                     onChanged: (value) => setState(() => _isPublic = value),
                   ),
                   const SizedBox(height: 16),
-
-                  // Кнопка
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -165,18 +166,19 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          final roomEntity = RoomEntity(
-                            id: 0,
-                            name: _nameController.text,
-                            isPublic: _isPublic,
-                            eventDate: _eventDate,
-                          );
-                          context.read<RoomCubit>().addRoom(roomEntity);
+                          context.read<RoomCubit>().addRoom(
+                                RoomEntity(
+                                  id: 0,
+                                  name: _nameController.text,
+                                  isPublic: _isPublic,
+                                  eventDate: _eventDate,
+                                ),
+                              );
                         }
                       },
-                      child: const Text(
-                        'Добавить',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.add,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -208,7 +210,8 @@ class _AddRoomBottomSheetState extends State<_AddRoomBottomSheet> {
   InputDecoration _inputDecoration(String hint, {Widget? suffixIcon}) {
     const border = OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(30)),
-      borderSide: BorderSide(color: Color.fromRGBO(155, 121, 246, 1), width: 3),
+      borderSide:
+          BorderSide(color: Color.fromRGBO(155, 121, 246, 1), width: 3),
     );
     return InputDecoration(
       contentPadding: const EdgeInsets.only(left: 20, top: 14, bottom: 14),

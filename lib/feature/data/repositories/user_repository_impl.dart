@@ -81,6 +81,7 @@ class UserRepositoryImpl extends UserRepository {
       id: 0,
       name: userEntity.name,
       uuid: userEntity.uuid,
+      birthDate: userEntity.birthDate,
     );
     try {
       final response = await userRemoteDataSources.createUser(userModel);

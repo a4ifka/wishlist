@@ -50,10 +50,15 @@ class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
 
   @override
   Future<void> createUser(UserModel userModel) async {
-    await supabaseClient.from('users_info').insert({
+    final data = <String, dynamic>{
       'uuid': userModel.uuid,
       'name': userModel.name,
-    }).select();
+    };
+    if (userModel.birthDate != null) {
+      data['birth_date'] =
+          userModel.birthDate!.toIso8601String().substring(0, 10);
+    }
+    await supabaseClient.from('users_info').insert(data).select();
   }
 
   @override

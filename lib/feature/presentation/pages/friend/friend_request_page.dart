@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wishlist/feature/domain/entities/friend_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
+import 'package:wishlist/l10n/app_localizations.dart';
 import 'package:wishlist/main.dart';
 
 class FriendRequestPage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUserId = supabase.auth.currentUser?.id ?? '';
 
     return Scaffold(
@@ -45,9 +47,9 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 4),
-                  const Text(
-                    'Заявки в друзья',
-                    style: TextStyle(
+                  Text(
+                    l10n.friendRequests,
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF6D57FC),
@@ -71,12 +73,12 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                 child: Row(
                   children: [
                     _Tab(
-                      label: 'Входящие',
+                      label: l10n.incoming,
                       selected: _tab == 0,
                       onTap: () => setState(() => _tab = 0),
                     ),
                     _Tab(
-                      label: 'Исходящие',
+                      label: l10n.outgoing,
                       selected: _tab == 1,
                       onTap: () => setState(() => _tab = 1),
                     ),
@@ -95,7 +97,7 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                            _tab == 0 ? 'Ответ отправлен' : 'Запрос отменён'),
+                            _tab == 0 ? l10n.responseSent : l10n.requestCancelled),
                         backgroundColor: _lightPurple,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
@@ -145,8 +147,8 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                     if (list.isEmpty) {
                       return _EmptyState(
                         text: _tab == 0
-                            ? 'Нет входящих заявок'
-                            : 'Нет исходящих заявок',
+                            ? l10n.noIncomingRequests
+                            : l10n.noOutgoingRequests,
                       );
                     }
 
@@ -336,9 +338,9 @@ class _OutgoingCard extends StatelessWidget {
               color: const Color.fromRGBO(199, 181, 250, 0.4),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Text(
-              'Ожидание',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)!.pending,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: Color.fromRGBO(109, 87, 252, 1),
@@ -411,9 +413,9 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Пока тут пусто',
-            style: TextStyle(fontSize: 13, color: Colors.grey),
+          Text(
+            AppLocalizations.of(context)!.emptyHere,
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
           ),
         ],
       ),
