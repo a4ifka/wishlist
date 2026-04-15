@@ -10,6 +10,7 @@ Deno.serve(async (_req: Request) => {
   try {
     await checkBirthdays()
     await checkEvents()
+    await checkBookedGifts()
     return new Response('ok', { status: 200 })
   } catch (e) {
     console.error(e)
@@ -84,6 +85,71 @@ async function checkEvents() {
           { type: 'event', roomId: String(room.id) }
         )
       }
+    }
+  }
+}
+
+// ─── Напоминания тому, кто забронировал подарок ───────────────────────────────
+
+async function checkBookedGifts() {
+  const { data: wishes } = await supabase
+    .from('wishes')
+    .select('id, name, room_id, fulfilled_by')
+    .eq('is_fulfilled', true)
+    .not('fulfilled_by', 'is', null)
+
+  if (!wishes?.length) return
+
+  for (const daysAhead of [1, 3, 7]) {
+    const targetDate = isoDate(daysAhead)
+    const label = daysLabel(daysAhead)
+
+    for (const wish of wishes) {
+      const { data: room } = await supabase
+        .from('rooms')
+        .select('event_date, owner')
+        .eq('id', wish.room_id)
+        .single()
+
+      if (!room) continue
+
+      let matches = false
+
+      if (room.event_date && room.event_date === targetDate) {
+        matches = true
+      }
+
+      if (!matches && !room.event_date && room.owner) {
+        const { data: ownerData } = await supabase
+          .from('users_info')
+          .select('birth_date')
+          .eq('uuid', room.owner)
+          .single()
+
+        if (
+          ownerData?.birth_date &&
+          (ownerData.birth_date as string).substring(5) === targetDate.substring(5)
+        ) {
+          matches = true
+        }
+      }
+
+      if (!matches) continue
+
+      const { data: booker } = await supabase
+        .from('users_info')
+        .select('fcm_token')
+        .eq('uuid', wish.fulfilled_by)
+        .single()
+
+      if (!booker?.fcm_token) continue
+
+      await sendNotification(
+        booker.fcm_token,
+        '🎁 Не забудь про подарок!',
+        `${label} праздник — ты собирался подарить «${wish.name}»`,
+        { type: 'gift_reminder', wishId: String(wish.id) }
+      )
     }
   }
 }
