@@ -40,5 +40,7 @@
   "eventDate": "Дата праздника",
   "add": "Добавить",
   "enterWishlistName": "Введите название вишлиста",
-  "enterEventDate": "Укажите дату праздника"
+  "enterEventDate": "Укажите дату праздника",
+  "noWishlistsFromFriends": "Пока нет списков желаний",
+  "friendsHaventCreatedWishlists": "Ваши друзья еще не создавали никаких списков желаний"
 }

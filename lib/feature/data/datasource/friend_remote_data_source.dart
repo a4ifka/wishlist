@@ -221,12 +221,18 @@ class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
         .eq('uuid', userId)
         .single();
 
-    final friendsJson = response['friend'] as List<dynamic>? ?? [];
+    final friendData = response['friend'];
+    print(friendData);
+    if (friendData is! List || friendData.isEmpty) {
+      return [];
+    }
 
-    if (friendsJson.isEmpty) return [];
+    final friendIds = friendData
+        .whereType<Map<String, dynamic>>()
+        .map((friend) => friend['uuid'] as String)
+        .toList();
 
-    final friendIds =
-        friendsJson.map<String>((friend) => friend['uuid'] as String).toList();
+    if (friendIds.isEmpty) return [];
 
     final friendsInfoResponse = await supabaseClient
         .from('users_info')
@@ -237,7 +243,7 @@ class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
         .map((e) => UserModel(
               uuid: e['uuid'],
               name: e['name'],
-              id: e['id'],
+              id: e['id'] ?? 0,
             ))
         .toList();
   }

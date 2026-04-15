@@ -25,120 +25,225 @@ class _FriendsFeedPageState extends State<FriendsFeedPage> {
   }
 
   void _loadFeed() {
-    final cubit = context.read<FriendCubit>();
-    cubit
-        .fetchListFriends(Supabase.instance.client.auth.currentUser!.id)
-        .then((_) {
-      final state = cubit.state;
-      if (state is FriendListSuccess) {
-        cubit.fetchAllFriendsRooms(state.users);
-      }
-    });
+    context
+        .read<FriendCubit>()
+        .fetchListFriends(Supabase.instance.client.auth.currentUser!.id);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Шапка ──────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 16, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.friends,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: _purple,
+    return BlocListener<FriendCubit, FriendState>(
+      listener: (context, state) {
+        if (state is FriendListSuccess) {
+          context.read<FriendCubit>().fetchAllFriendsRooms(state.users);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 20, 16, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.friends,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: _purple,
+                            ),
                           ),
-                        ),
-                        Text(
-                          l10n.friendsWishlists,
-                          style: const TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                      ],
+                          Text(
+                            l10n.friendsWishlists,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  // Кнопка — меню друзей
-                  _FriendsMenuButton(),
-                ],
+                    _FriendsMenuButton(),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: BlocBuilder<FriendCubit, FriendState>(
+                  builder: (context, state) {
+                    if (state is FriendStart) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: _purple),
+                      );
+                    }
 
-            const SizedBox(height: 20),
+                    if (state is AllFriendsRoomsLoaded) {
+                      if (state.roomsByFriend.isEmpty) {
+                        return _EmptyFeed();
+                      }
 
-            // ── Лента ──────────────────────────────────────────────
-            Expanded(
-              child: BlocBuilder<FriendCubit, FriendState>(
-                builder: (context, state) {
-                  if (state is FriendStart) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: _purple),
-                    );
-                  }
+                      final friendsWithRooms = <MapEntry<UserEntity, List<RoomEntity>>>[];
+                      final friendsWithoutRooms = <UserEntity>[];
 
-                  if (state is AllFriendsRoomsLoaded) {
-                    final entries = state.roomsByFriend.entries
-                        .expand((e) => e.value.map((r) => (e.key, r)))
-                        .where((pair) => pair.$2.isPublic)
-                        .toList()
-                      ..sort((a, b) {
-                        final da = a.$2.eventDate;
-                        final db = b.$2.eventDate;
+                      state.roomsByFriend.forEach((friend, rooms) {
+                        final publicRooms = rooms.where((r) => r.isPublic).toList();
+                        if (publicRooms.isNotEmpty) {
+                          friendsWithRooms.add(MapEntry(friend, publicRooms));
+                        } else {
+                          friendsWithoutRooms.add(friend);
+                        }
+                      });
+
+                      if (friendsWithRooms.isEmpty && friendsWithoutRooms.isEmpty) {
+                        return _EmptyFeed();
+                      }
+
+                      friendsWithRooms.sort((a, b) {
+                        final da = a.value.first.eventDate;
+                        final db = b.value.first.eventDate;
                         if (da == null && db == null) return 0;
                         if (da == null) return 1;
                         if (db == null) return -1;
                         return da.compareTo(db);
                       });
 
-                    if (entries.isEmpty) {
-                      return _EmptyFeed();
+                      friendsWithoutRooms.sort((a, b) => a.name.compareTo(b.name));
+
+                      return RefreshIndicator(
+                        color: _purple,
+                        onRefresh: () async => _loadFeed(),
+                        child: ListView(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                          children: [
+                            if (friendsWithRooms.isNotEmpty) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12, top: 8),
+                                child: Text(
+                                  l10n.friendsWithWishlists,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              ...friendsWithRooms.expand((entry) => 
+                                entry.value.map((room) => _RoomFeedCard(
+                                  friend: entry.key,
+                                  room: room,
+                                ))
+                              ),
+                            ],
+                            if (friendsWithoutRooms.isNotEmpty) ...[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: 12, 
+                                  top: friendsWithRooms.isNotEmpty ? 24 : 8
+                                ),
+                                child: Text(
+                                  l10n.friendsWithoutWishlists,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              ...friendsWithoutRooms.map((friend) => _FriendWithoutWishlistCard(
+                                friend: friend,
+                              )),
+                            ],
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      );
                     }
 
-                    return RefreshIndicator(
-                      color: _purple,
-                      onRefresh: () async => _loadFeed(),
-                      child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 4),
-                        itemCount: entries.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 12),
-                        itemBuilder: (context, i) {
-                          final friend = entries[i].$1;
-                          final room = entries[i].$2;
-                          return _RoomFeedCard(
-                            friend: friend,
-                            room: room,
-                          );
-                        },
-                      ),
-                    );
-                  }
-
-                  return _EmptyFeed();
-                },
+                    return _EmptyFeed();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ── Кнопка-меню с друзьями ────────────────────────────────────────────────────
+class _FriendWithoutWishlistCard extends StatelessWidget {
+  final UserEntity friend;
+  static const _purple = Color(0xFF6D57FC);
+  static const _lightPurple = Color(0xFFC7B5FA);
+
+  const _FriendWithoutWishlistCard({required this.friend});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7F9),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: _lightPurple.withValues(alpha: 0.4),
+            child: Text(
+              friend.name.isNotEmpty ? friend.name[0].toUpperCase() : '?',
+              style: const TextStyle(
+                color: _purple,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  friend.name,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.noWishlistsYet,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.card_giftcard_outlined,
+            color: Colors.grey.shade400,
+            size: 24,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _FriendsMenuButton extends StatelessWidget {
   @override
@@ -222,7 +327,6 @@ class _FriendsMenuSheet extends StatelessWidget {
             },
           ),
           const SizedBox(height: 10),
-          // Список друзей
           BlocBuilder<FriendCubit, FriendState>(
             builder: (context, state) {
               if (state is FriendListSuccess && state.users.isNotEmpty) {
@@ -271,8 +375,11 @@ class _MenuTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _MenuTile(
-      {required this.icon, required this.label, required this.onTap});
+  const _MenuTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -307,8 +414,6 @@ class _MenuTile extends StatelessWidget {
   }
 }
 
-// ── Карточка вишлиста в ленте ─────────────────────────────────────────────────
-
 class _RoomFeedCard extends StatelessWidget {
   final UserEntity friend;
   final RoomEntity room;
@@ -341,8 +446,7 @@ class _RoomFeedCard extends StatelessWidget {
     final (daysLabel, isUrgent) = _daysLabel(l10n);
 
     return GestureDetector(
-      onTap: () =>
-          Navigator.pushNamed(context, '/book-wishes', arguments: room),
+      onTap: () => Navigator.pushNamed(context, '/book-wishes', arguments: room),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -352,16 +456,13 @@ class _RoomFeedCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Друг + дата
             Row(
               children: [
                 CircleAvatar(
                   radius: 18,
                   backgroundColor: _lightPurple.withValues(alpha: 0.4),
                   child: Text(
-                    friend.name.isNotEmpty
-                        ? friend.name[0].toUpperCase()
-                        : '?',
+                    friend.name.isNotEmpty ? friend.name[0].toUpperCase() : '?',
                     style: const TextStyle(
                       color: _purple,
                       fontWeight: FontWeight.bold,
@@ -382,8 +483,7 @@ class _RoomFeedCard extends StatelessWidget {
                 ),
                 if (daysLabel.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: isUrgent
                           ? const Color(0xFFFF9ECC).withValues(alpha: 0.3)
@@ -401,10 +501,7 @@ class _RoomFeedCard extends StatelessWidget {
                   ),
               ],
             ),
-
             const SizedBox(height: 12),
-
-            // Название вишлиста
             Text(
               room.name,
               style: const TextStyle(
@@ -413,14 +510,10 @@ class _RoomFeedCard extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-
             if (dateLabel != null) ...[
               const SizedBox(height: 6),
               Row(
                 children: [
-                  const Icon(Icons.cake_outlined,
-                      size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
                   Text(
                     dateLabel,
                     style: const TextStyle(fontSize: 13, color: Colors.grey),
@@ -428,16 +521,11 @@ class _RoomFeedCard extends StatelessWidget {
                 ],
               ),
             ],
-
             const SizedBox(height: 14),
-
-            // Кнопка
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(
-                    context, '/book-wishes',
-                    arguments: room),
+                onPressed: () => Navigator.pushNamed(context, '/book-wishes', arguments: room),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _purple,
                   foregroundColor: Colors.white,
@@ -463,8 +551,6 @@ class _RoomFeedCard extends StatelessWidget {
   }
 }
 
-// ── Пустая лента ──────────────────────────────────────────────────────────────
-
 class _EmptyFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -473,8 +559,7 @@ class _EmptyFeed extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.card_giftcard_outlined,
-              size: 72, color: Colors.grey.shade300),
+          Icon(Icons.card_giftcard_outlined, size: 72, color: Colors.grey.shade300),
           const SizedBox(height: 12),
           Text(
             l10n.feedEmpty,
@@ -494,16 +579,14 @@ class _EmptyFeed extends StatelessWidget {
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/search-friend'),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: const Color(0xFF6D57FC),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 l10n.findFriends,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
           ),

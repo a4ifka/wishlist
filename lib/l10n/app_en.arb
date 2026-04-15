@@ -40,5 +40,7 @@
   "eventDate": "Event date",
   "add": "Add",
   "enterWishlistName": "Enter wishlist name",
-  "enterEventDate": "Enter event date"
+  "enterEventDate": "Enter event date",
+  "noWishlistsFromFriends": "No wishlists yet",
+  "friendsHaventCreatedWishlists": "Your friends haven\'t created any wishlists"
 }

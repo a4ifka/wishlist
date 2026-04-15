@@ -5,10 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
-import 'app_localizations_en.dart';
-import 'app_localizations_ru.dart';
-
-// ignore_for_file: type=lint
+import 'app_localizations_en.dart' as en;
+import 'app_localizations_ru.dart' as ru;
 
 abstract class AppLocalizations {
   AppLocalizations(String locale)
@@ -36,7 +34,6 @@ abstract class AppLocalizations {
     Locale('ru'),
   ];
 
-  // --- Auth ---
   String get login;
   String get email;
   String get password;
@@ -52,7 +49,6 @@ abstract class AppLocalizations {
   String get passwordsMismatch;
   String get alreadyHaveAccount;
 
-  // --- Create user ---
   String get enterYourNickname;
   String get nickname;
   String get birthDateOptional;
@@ -60,14 +56,12 @@ abstract class AppLocalizations {
   String get userNotAuthorized;
   String get pleaseEnterNickname;
 
-  // --- Profile ---
   String get profile;
   String get settings;
   String get language;
   String get signOut;
   String get birthDate;
 
-  // --- Home ---
   String get home;
   String get greeting;
   String get myWishes;
@@ -77,7 +71,6 @@ abstract class AppLocalizations {
   String get loading;
   String get errorServer;
 
-  // --- Wishlist ---
   String get publicRoom;
   String get publicRoomDesc;
   String get newWishlist;
@@ -87,19 +80,16 @@ abstract class AppLocalizations {
   String get enterWishlistName;
   String get enterEventDate;
 
-  // --- Share / Invite ---
   String get share;
   String inviteText(String roomName, String url);
   String get noWishesYet;
   String get publicLabel;
   String get privateLabel;
 
-  // --- Navigation ---
   String get navHome;
   String get navFriends;
   String get navProfile;
 
-  // --- Friends ---
   String get friends;
   String get friendsWishlists;
   String get findFriend;
@@ -130,6 +120,12 @@ abstract class AppLocalizations {
   String friendRooms(String name);
   String get success;
   String get operationError;
+
+  String get friendsHaventCreatedWishlists;
+  String get noWishlistsFromFriends;
+  String get friendsWithWishlists;
+  String get friendsWithoutWishlists;
+  String get noWishlistsYet;
 }
 
 class _AppLocalizationsDelegate
@@ -138,8 +134,7 @@ class _AppLocalizationsDelegate
 
   @override
   Future<AppLocalizations> load(Locale locale) {
-    return SynchronousFuture<AppLocalizations>(
-        lookupAppLocalizations(locale));
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
   }
 
   @override
@@ -153,9 +148,9 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
-      return AppLocalizationsEn();
+      return en.AppLocalizationsEn();
     case 'ru':
-      return AppLocalizationsRu();
+      return ru.AppLocalizationsRu();
   }
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale".');
