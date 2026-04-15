@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wishlist/feature/domain/entities/friend_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_cubit.dart';
 import 'package:wishlist/feature/presentation/cubit/friend_cubit/friend_state.dart';
@@ -16,6 +17,7 @@ class FriendRequestPage extends StatefulWidget {
 
 class _FriendRequestPageState extends State<FriendRequestPage> {
   int _tab = 0; // 0 — входящие, 1 — исходящие
+  RealtimeChannel? _requestsChannel;
 
   static const _purple = Color.fromRGBO(109, 87, 252, 1);
   static const _lightPurple = Color.fromRGBO(199, 181, 250, 1);
@@ -25,6 +27,22 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
     super.initState();
     final userId = supabase.auth.currentUser?.id ?? '';
     context.read<FriendCubit>().fetchFriendRequests(userId);
+    _requestsChannel = Supabase.instance.client
+        .channel('friend_requests:$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'friend_requset',
+          callback: (_) =>
+              context.read<FriendCubit>().fetchFriendRequests(userId),
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    _requestsChannel?.unsubscribe();
+    super.dispose();
   }
 
   @override

@@ -17,6 +17,31 @@ class FriendListPage extends StatefulWidget {
 }
 
 class _FriendListPageState extends State<FriendListPage> {
+  RealtimeChannel? _friendsChannel;
+
+  @override
+  void initState() {
+    super.initState();
+    final userId = supabase.auth.currentUser!.id;
+    context.read<FriendCubit>().fetchListFriends(userId);
+    context.read<UserCubit>().fetchUserInfo(userId);
+    _friendsChannel = Supabase.instance.client
+        .channel('friend_list:$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'friend_requset',
+          callback: (_) => context.read<FriendCubit>().fetchListFriends(userId),
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    _friendsChannel?.unsubscribe();
+    super.dispose();
+  }
+
   void _showSettings(BuildContext context) {
     final localeCubit = context.read<LocaleCubit>();
     showModalBottomSheet(
@@ -157,12 +182,6 @@ class _FriendListPageState extends State<FriendListPage> {
 
   @override
   Widget build(BuildContext context) {
-    context
-        .read<FriendCubit>()
-        .fetchListFriends(Supabase.instance.client.auth.currentUser!.id);
-    context
-        .read<UserCubit>()
-        .fetchUserInfo(Supabase.instance.client.auth.currentUser!.id);
     return Scaffold(
       body: Column(
         children: [

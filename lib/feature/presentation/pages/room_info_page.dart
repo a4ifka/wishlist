@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wishlist/feature/domain/entities/room_entity.dart';
 import 'package:wishlist/feature/presentation/cubit/wish_cubit/wish_cubit.dart';
 import 'package:wishlist/feature/presentation/widgets/wish_list_item.dart';
@@ -19,6 +20,7 @@ class RoomInfoPage extends StatefulWidget {
 class _RoomInfoPageState extends State<RoomInfoPage> {
   bool _initialized = false;
   late RoomEntity _room;
+  RealtimeChannel? _wishesChannel;
 
   @override
   void didChangeDependencies() {
@@ -27,7 +29,28 @@ class _RoomInfoPageState extends State<RoomInfoPage> {
       _initialized = true;
       _room = ModalRoute.of(context)!.settings.arguments as RoomEntity;
       context.read<WishCubit>().fetchWishesByRoom(_room.id);
+      _wishesChannel = Supabase.instance.client
+          .channel('room_wishes:${_room.id}')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'wishes',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'room_id',
+              value: _room.id,
+            ),
+            callback: (_) =>
+                context.read<WishCubit>().fetchWishesByRoom(_room.id),
+          )
+          .subscribe();
     }
+  }
+
+  @override
+  void dispose() {
+    _wishesChannel?.unsubscribe();
+    super.dispose();
   }
 
   void _share(AppLocalizations l10n) {
