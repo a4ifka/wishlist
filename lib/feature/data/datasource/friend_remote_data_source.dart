@@ -60,49 +60,54 @@ class FriendRemoteDataSourceImpl extends FriendRemoteDataSource {
 
   @override
   Future<void> respondToFriendRequest(String requestId, bool accept) async {
+    final id = int.tryParse(requestId);
+    if (id == null) {
+      throw Exception('Invalid requestId');
+    }
+
+    // 🔹 Получаем заявку безопасно
+    final request = await supabaseClient
+        .from('friend_requset')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
+
+    if (request == null) {
+      throw Exception('Request not found');
+    }
+
+    // 🔹 Если отклоняем — просто меняем статус и ВЫХОДИМ
     if (!accept) {
-      // Просто обновляем статус запроса, если отклоняем
       await supabaseClient
           .from('friend_requset')
-          .update({'status': 'rejected'}).eq('id', requestId);
+          .update({'status': 'rejected'}).eq('id', id);
       return;
     }
 
-    final requestResponse = await supabaseClient
-        .from('friend_requset')
-        .select()
-        .eq('id', requestId)
-        .single();
-
-    final request = requestResponse;
     final senderId = request['sender_id'] as String;
     final receiverId = request['receiver_id'] as String;
 
+    // 🔹 Получаем пользователей
     final senderInfo = await _getUserInfo(senderId);
     final receiverInfo = await _getUserInfo(receiverId);
 
+    // 🔥 Добавляем другу ОБОИХ пользователей
     await _addFriendToUser(
       userId: senderId,
       friendUsername: receiverInfo.name,
       friendUuid: receiverId,
     );
 
-    // Обновляем друзей у получателя
     await _addFriendToUser(
       userId: receiverId,
       friendUsername: senderInfo.name,
       friendUuid: senderId,
     );
 
-    // Обновляем статус запроса
+    // 🔹 Обновляем статус В КОНЦЕ
     await supabaseClient
         .from('friend_requset')
-        .update({'status': 'accepted'}).eq('id', requestId);
-    // await supabaseClient
-    //     .from('friend_requset')
-    //     .update({'status': accept ? 'accepted' : 'rejected'})
-    //     .eq('id', requestId)
-    //     .select();
+        .update({'status': 'accepted'}).eq('id', id);
   }
 
   @override

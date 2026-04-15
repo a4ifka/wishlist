@@ -24,7 +24,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<RoomCubit>().fetchRoomsByUser();
-    context.read<UserCubit>().fetchUserInfo(supabase.auth.currentUser!.id);
+    if (context.read<UserCubit>().state is! UserLoaded) {
+      context.read<UserCubit>().fetchUserInfo(supabase.auth.currentUser!.id);
+    }
     context.read<WishCubit>().fetchCounts();
 
     _roomsChannel = Supabase.instance.client
